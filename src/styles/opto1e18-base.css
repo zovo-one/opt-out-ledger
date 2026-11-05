@@ -1,0 +1,395 @@
+/* ============================================================================
+ * opto1e18-base.css —  brand design system
+ * ----------------------------------------------------------------------------
+ * The single shared stylesheet every  Chrome extension imports. It defines
+ * the full brand as CSS custom properties (colors, type scale, radii, shadows,
+ * transitions) plus the base component classes used across popup, options,
+ * onboarding, and the paywall modal.
+ *
+ * Source of truth: BUILD-RULES.md §  BRAND SYSTEM.
+ * Import first, before any per-extension stylesheet, so tokens cascade down:
+ *     <link rel="stylesheet" href="opto1e18-base.css">
+ *     <link rel="stylesheet" href="popup.css">
+ * ========================================================================== */
+
+/* ---- Design tokens (light) ------------------------------------------------ */
+:root {
+  /* Brand — hue-8 coral/teal, LOCKED by TECHNICAL-BRIEF (do not re-hue).
+     The *-strong pair is the luminance-pinned AA variant of primary for
+     text-bearing fills and small-text links (white label on #da7262 is only
+     3.2:1; the engine's 2026-07-28 luminance doctrine pins pairwise ratios,
+     not just palette hexes). Both stay inside the hue-8 family (~7.5°). */
+  --opto1e18-primary:        #da7262;   /* warm coral — hero, icons, tints, rings */
+  --opto1e18-primary-dark:   #d04d39;   /* deep coral — small accents            */
+  --opto1e18-primary-light:  #e4978b;   /* subtle accents / backgrounds           */
+  --opto1e18-primary-50:     #fbf0ee;   /* tint fill (accent-bg)                  */
+  --opto1e18-primary-strong: #C23E2B;   /* AA coral — button fills, small links: white text 5.2:1 */
+  --opto1e18-primary-strong-dark: #A93423; /* hover for -strong: white text 6.6:1 */
+  --opto1e18-link:           #C23E2B;   /* small-text links (12–14px): 5.2:1 on white */
+  --opto1e18-accent:         #47d1c1;   /* teal — secondary actions, highlights   */
+
+  /* Surfaces & text */
+  --opto1e18-bg:             #FFFFFF;
+  --opto1e18-surface:        #fbf9f9;   /* cards, input backgrounds               */
+  --opto1e18-surface-2:      #F1F2F4;   /* nested / hover surface                 */
+  --opto1e18-text:           #1A1A2E;   /* text primary                           */
+  --opto1e18-text-secondary: #6B7280;
+  --opto1e18-badge-free-text: #4B5563;  /* 6.7:1 on surface-2 (AA at 10px bold) */
+  --opto1e18-border:         #e8e4e3;
+
+  /* Status — base tokens stay bright (fills, icons on tints); *-text variants
+     are the AA-safe derivatives for 12–14px TEXT on white/surface. */
+  --opto1e18-success:        #10B981;
+  --opto1e18-warning:        #F59E0B;
+  --opto1e18-error:          #EF4444;
+  --opto1e18-success-text:   #0B7A55;   /* 5.3:1 on white */
+  --opto1e18-error-text:     #C81E1E;   /* 5.8:1 on white */
+  --opto1e18-pro:            #F59E0B;   /* gold — PRO badges + upgrade CTAs        */
+  --opto1e18-pro-dark:       #D97706;
+  --opto1e18-on-pro:         #1A1A2E;   /* dark on gold = 8:1 (white on gold fails AA at 2.15:1) */
+  --opto1e18-pro-text:       #8A4B06;   /* small gold text on white: 6.2:1 */
+
+  /* Typography */
+  --opto1e18-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --opto1e18-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  --opto1e18-fs-caption:    12px;
+  --opto1e18-fs-body:       14px;
+  --opto1e18-fs-subheading: 16px;
+  --opto1e18-fs-heading:    20px;
+  --opto1e18-fs-title:      24px;
+  --opto1e18-fs-hero:       44px;   /* the one big number per screen */
+  --opto1e18-fw-body:       400;
+  --opto1e18-fw-medium:     500;
+  --opto1e18-fw-heading:    600;
+  --opto1e18-lh:            1.5;
+
+  /* Radii — slightly rounder than 8/6/4 reads friendlier/premium */
+  --opto1e18-radius-card:   12px;
+  --opto1e18-radius-btn:    8px;
+  --opto1e18-radius-input:  8px;
+  --opto1e18-radius-pill:   9999px;
+
+  /* Shadows — soft, low, single-direction (premium ≠ hard drop shadow) */
+  --opto1e18-shadow-sm: 0 1px 2px rgba(16,24,40,0.05);
+  --opto1e18-shadow: 0 1px 3px rgba(16,24,40,0.06), 0 6px 16px -6px rgba(16,24,40,0.10);
+  --opto1e18-shadow-lg: 0 24px 48px -12px rgba(16,24,40,0.28);
+
+  /* Motion */
+  --opto1e18-transition: 150ms ease-in-out;
+
+  /* Layout */
+  --opto1e18-popup-w:      360px;
+  --opto1e18-popup-w-wide: 400px;
+  --opto1e18-popup-maxh:   560px;
+  --opto1e18-space-1: 4px;  --opto1e18-space-2: 8px;  --opto1e18-space-3: 12px;
+  --opto1e18-space-4: 16px; --opto1e18-space-5: 20px; --opto1e18-space-6: 24px;
+  --opto1e18-space-7: 32px; --opto1e18-space-8: 40px;
+}
+
+/* ---- Dark mode ------------------------------------------------------------ */
+/* Follows the system preference by default; a manual [data-theme] on <html>
+ * (set from General → Theme) always wins in both directions. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --opto1e18-primary-50:     #241f45;
+    --opto1e18-bg:             #0F0F1A;
+    --opto1e18-surface:        #1A1A2E;
+    --opto1e18-surface-2:      #232338;
+    --opto1e18-text:           #F5F5FA;
+    --opto1e18-text-secondary: #A1A1AA;
+    --opto1e18-badge-free-text: #A1A1AA;
+    --opto1e18-border:         #2E2E45;
+    --opto1e18-link:           #da7262;   /* primary itself is 5.7:1 on the dark ground */
+    --opto1e18-pro-text:       #E9A23B;   /* 6.9:1 on the dark ground */
+    --opto1e18-success-text:   #34D399;
+    --opto1e18-error-text:     #F87171;
+    --opto1e18-shadow: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -1px rgba(0,0,0,0.3);
+    --opto1e18-shadow-lg: 0 20px 40px -8px rgba(0,0,0,0.6), 0 8px 16px -8px rgba(0,0,0,0.4);
+  }
+}
+:root[data-theme='dark'] {
+  --opto1e18-primary-50:     #241f45;
+  --opto1e18-bg:             #0F0F1A;
+  --opto1e18-surface:        #1A1A2E;
+  --opto1e18-surface-2:      #232338;
+  --opto1e18-text:           #F5F5FA;
+  --opto1e18-text-secondary: #A1A1AA;
+  --opto1e18-badge-free-text: #A1A1AA;
+  --opto1e18-border:         #2E2E45;
+  --opto1e18-link:           #da7262;
+  --opto1e18-pro-text:       #E9A23B;
+  --opto1e18-success-text:   #34D399;
+  --opto1e18-error-text:     #F87171;
+  --opto1e18-shadow: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -1px rgba(0,0,0,0.3);
+  --opto1e18-shadow-lg: 0 20px 40px -8px rgba(0,0,0,0.6), 0 8px 16px -8px rgba(0,0,0,0.4);
+}
+
+/* ---- Base ----------------------------------------------------------------- */
+.opto1e18-root,
+body.opto1e18 {
+  margin: 0;
+  font-family: var(--opto1e18-font);
+  font-size: var(--opto1e18-fs-body);
+  line-height: var(--opto1e18-lh);
+  color: var(--opto1e18-text);
+  background: var(--opto1e18-bg);
+  -webkit-font-smoothing: antialiased;
+}
+.opto1e18-root *, .opto1e18-root *::before, .opto1e18-root *::after { box-sizing: border-box; }
+
+/* Popup sizing helper */
+.opto1e18-popup {
+  width: var(--opto1e18-popup-w);
+  max-height: var(--opto1e18-popup-maxh);
+  overflow-y: auto;
+}
+.opto1e18-popup--wide { width: var(--opto1e18-popup-w-wide); }
+
+/* ---- Header --------------------------------------------------------------- */
+.opto1e18-header {
+  display: flex;
+  align-items: center;
+  gap: var(--opto1e18-space-3);
+  padding: var(--opto1e18-space-4) var(--opto1e18-space-5);
+  border-bottom: 1px solid var(--opto1e18-border);
+}
+.opto1e18-header__icon { width: 28px; height: 28px; border-radius: var(--opto1e18-radius-input); }
+.opto1e18-header__title {
+  flex: 1; min-width: 0;
+  font-size: var(--opto1e18-fs-subheading);
+  font-weight: var(--opto1e18-fw-heading);
+  letter-spacing: -0.01em;
+}
+
+/* ---- Card ----------------------------------------------------------------- */
+.opto1e18-card {
+  background: var(--opto1e18-bg);
+  border: 1px solid var(--opto1e18-border);
+  border-radius: var(--opto1e18-radius-card);
+  padding: var(--opto1e18-space-5);
+  box-shadow: var(--opto1e18-shadow);
+}
+.opto1e18-card--flush { box-shadow: none; background: var(--opto1e18-surface); }
+
+/* ---- Buttons -------------------------------------------------------------- */
+.opto1e18-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--opto1e18-space-2);
+  min-height: 40px;                /* comfortable premium tap target */
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: var(--opto1e18-fs-body);
+  font-weight: var(--opto1e18-fw-medium);
+  line-height: 1;
+  border: 1px solid transparent;
+  border-radius: var(--opto1e18-radius-btn);
+  cursor: pointer;
+  transition: background var(--opto1e18-transition), border-color var(--opto1e18-transition),
+              color var(--opto1e18-transition), transform var(--opto1e18-transition);
+}
+.opto1e18-btn:active { transform: translateY(1px); }
+.opto1e18-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--opto1e18-bg), 0 0 0 4px var(--opto1e18-primary);
+}
+.opto1e18-btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+
+.opto1e18-btn--primary { background: var(--opto1e18-primary-strong); color: #fff; }
+.opto1e18-btn--primary:hover:not([disabled]) { background: var(--opto1e18-primary-strong-dark); }
+
+.opto1e18-btn--secondary {
+  background: var(--opto1e18-surface);
+  color: var(--opto1e18-text);
+  border-color: var(--opto1e18-border);
+}
+.opto1e18-btn--secondary:hover:not([disabled]) { background: var(--opto1e18-surface-2); }
+
+.opto1e18-btn--ghost { background: transparent; color: var(--opto1e18-link); }
+.opto1e18-btn--ghost:hover:not([disabled]) { background: var(--opto1e18-primary-50); }
+
+/* Gold upgrade CTA — the only button that uses the PRO color. */
+.opto1e18-btn--pro {
+  background: var(--opto1e18-pro);
+  color: var(--opto1e18-on-pro);
+  font-weight: var(--opto1e18-fw-heading);
+}
+.opto1e18-btn--pro:hover:not([disabled]) { background: var(--opto1e18-pro-dark); }
+
+.opto1e18-btn--block { width: 100%; }
+
+/* ---- Inputs --------------------------------------------------------------- */
+.opto1e18-input {
+  width: 100%;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: var(--opto1e18-fs-body);
+  color: var(--opto1e18-text);
+  background: var(--opto1e18-surface);
+  border: 1px solid var(--opto1e18-border);
+  border-radius: var(--opto1e18-radius-input);
+  transition: border-color var(--opto1e18-transition), box-shadow var(--opto1e18-transition);
+}
+.opto1e18-input:focus-visible {
+  outline: none;
+  border-color: var(--opto1e18-primary);
+  box-shadow: 0 0 0 3px var(--opto1e18-primary-50);
+}
+.opto1e18-label {
+  display: block;
+  font-size: var(--opto1e18-fs-caption);
+  font-weight: var(--opto1e18-fw-medium);
+  color: var(--opto1e18-text-secondary);
+  margin-bottom: var(--opto1e18-space-1);
+}
+
+/* ---- PRO badge ------------------------------------------------------------ */
+.opto1e18-pro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--opto1e18-pro-text);
+  background: transparent;
+  border: 1px solid var(--opto1e18-pro);
+  border-radius: var(--opto1e18-radius-pill);
+  line-height: 1.4;
+}
+.opto1e18-pro-badge--solid { color: var(--opto1e18-on-pro); background: var(--opto1e18-pro); border-color: var(--opto1e18-pro); }
+.opto1e18-pro-badge__lock { width: 10px; height: 10px; }
+
+/* ---- Footer --------------------------------------------------------------- */
+.opto1e18-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--opto1e18-space-3) var(--opto1e18-space-5);
+  font-size: var(--opto1e18-fs-caption);
+  color: var(--opto1e18-text-secondary);
+  border-top: 1px solid var(--opto1e18-border);
+}
+.opto1e18-footer a { color: var(--opto1e18-link); text-decoration: none; }
+.opto1e18-footer a:hover { text-decoration: underline; }
+
+/* ---- Utility -------------------------------------------------------------- */
+.opto1e18-muted { color: var(--opto1e18-text-secondary); }
+.opto1e18-mono  { font-family: var(--opto1e18-font-mono); }
+.opto1e18-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ===========================================================================
+ * PREMIUM COMPONENTS (v3) — the patterns that make a screen read premium.
+ * See DESIGN-SYSTEM.md for when/why to use each.
+ * ========================================================================= */
+
+/* Popup shell: sits on the neutral surface, comfortable padding, grid rhythm */
+.opto1e18-popup { background: var(--opto1e18-surface); }
+.opto1e18-stack { display: flex; flex-direction: column; gap: var(--opto1e18-space-4);
+  padding: var(--opto1e18-space-5); }
+
+/* Section label — 11px uppercase tracked muted (AdBlock "NUMBER OF ITEMS…") */
+.opto1e18-eyebrow {
+  margin: 0 0 var(--opto1e18-space-2);
+  font-size: 11px; font-weight: var(--opto1e18-fw-heading);
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--opto1e18-text-secondary);
+}
+
+/* ---- Hero stat — the ONE thing the eye lands on first --------------------- */
+.opto1e18-hero { text-align: center; padding: var(--opto1e18-space-7) var(--opto1e18-space-5); }
+.opto1e18-hero__num {
+  font-size: var(--opto1e18-fs-hero); font-weight: 700; letter-spacing: -0.02em;
+  line-height: 1.05; color: var(--opto1e18-primary);
+}
+.opto1e18-hero__num--pro { color: var(--opto1e18-pro); }
+.opto1e18-hero__label {
+  margin-top: var(--opto1e18-space-2);
+  font-size: 11px; font-weight: var(--opto1e18-fw-heading);
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--opto1e18-text-secondary);
+}
+.opto1e18-hero__sub { margin-top: var(--opto1e18-space-3); color: var(--opto1e18-text); }
+/* gradient progress — thin, calm */
+.opto1e18-progress { height: 6px; border-radius: 999px; background: var(--opto1e18-surface-2); overflow: hidden; }
+.opto1e18-progress__fill { height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--opto1e18-primary), var(--opto1e18-accent)); }
+
+/* Inline stat row — "4 suspended · 45 total · 6 windows" */
+.opto1e18-stats { display: flex; justify-content: center; gap: var(--opto1e18-space-4);
+  font-size: var(--opto1e18-fs-caption); color: var(--opto1e18-text-secondary); }
+.opto1e18-stats b { color: var(--opto1e18-text); font-weight: var(--opto1e18-fw-heading); }
+
+/* ---- Badges --------------------------------------------------------------- */
+.opto1e18-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.4;
+  border-radius: var(--opto1e18-radius-pill);
+}
+.opto1e18-badge--pro  { color: var(--opto1e18-on-pro); background: var(--opto1e18-pro); }
+.opto1e18-badge--free { color: var(--opto1e18-badge-free-text); background: var(--opto1e18-surface-2); }
+.opto1e18-badge--new  { color: #fff; background: #2563EB; }
+
+/* ---- Loss-framing alert — the cost of NOT upgrading (use once, honestly) --- */
+.opto1e18-alert {
+  display: flex; align-items: center; gap: var(--opto1e18-space-2);
+  padding: 10px 12px; border-radius: var(--opto1e18-radius-btn);
+  font-size: var(--opto1e18-fs-body);
+}
+.opto1e18-alert--warn {
+  color: var(--opto1e18-error-text);
+  background: color-mix(in srgb, var(--opto1e18-error) 8%, var(--opto1e18-bg));
+  border: 1px solid color-mix(in srgb, var(--opto1e18-error) 22%, transparent);
+}
+
+/* ---- Empty state — delight, never a blank box ----------------------------- */
+.opto1e18-empty { text-align: center; padding: var(--opto1e18-space-7) var(--opto1e18-space-5); }
+.opto1e18-empty__art { width: 96px; height: 96px; margin: 0 auto var(--opto1e18-space-4); opacity: 0.9; }
+.opto1e18-empty__title { font-size: var(--opto1e18-fs-heading); font-weight: 700; letter-spacing: -0.01em; }
+.opto1e18-empty__text { margin-top: var(--opto1e18-space-2); color: var(--opto1e18-text-secondary); }
+
+/* ---- Tip carousel — dismissible in-context hint --------------------------- */
+.opto1e18-tip {
+  position: relative; border-radius: var(--opto1e18-radius-card);
+  border: 1px solid var(--opto1e18-border); background: var(--opto1e18-bg);
+  border-left: 3px solid var(--opto1e18-primary);
+  padding: var(--opto1e18-space-4) var(--opto1e18-space-5);
+}
+.opto1e18-tip__foot { display: flex; justify-content: space-between; align-items: center;
+  margin-top: var(--opto1e18-space-3); font-size: var(--opto1e18-fs-caption); color: var(--opto1e18-text-secondary); }
+.opto1e18-tip__next { color: var(--opto1e18-link); font-weight: var(--opto1e18-fw-medium); cursor: pointer; }
+
+/* ---- List row ------------------------------------------------------------- */
+.opto1e18-row {
+  display: flex; align-items: center; gap: var(--opto1e18-space-3);
+  min-height: 44px; padding: var(--opto1e18-space-2) var(--opto1e18-space-3);
+  border-radius: var(--opto1e18-radius-btn); cursor: pointer;
+  transition: background var(--opto1e18-transition);
+}
+.opto1e18-row:hover { background: var(--opto1e18-primary-50); }
+.opto1e18-row__label { flex: 1; min-width: 0; }
+.opto1e18-row__meta { color: var(--opto1e18-text-secondary); font-family: var(--opto1e18-font-mono);
+  font-size: var(--opto1e18-fs-caption); }
+
+/* ---- Segmented control — Tab / Screen / Webcam --------------------------- */
+.opto1e18-seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--opto1e18-space-2); }
+.opto1e18-seg__item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: var(--opto1e18-space-3); border: 1px solid var(--opto1e18-border);
+  border-radius: var(--opto1e18-radius-card); background: var(--opto1e18-bg);
+  cursor: pointer; transition: border-color var(--opto1e18-transition), background var(--opto1e18-transition);
+}
+.opto1e18-seg__item:hover { border-color: var(--opto1e18-primary-light); }
+.opto1e18-seg__item[aria-selected='true'] { border-color: var(--opto1e18-primary); background: var(--opto1e18-primary-50); }
+
+@media (prefers-reduced-motion: reduce) {
+  .opto1e18-root *, .opto1e18-root *::before, .opto1e18-root *::after {
+    transition: none !important; animation: none !important;
+  }
+}

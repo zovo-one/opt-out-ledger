@@ -1,0 +1,130 @@
+/* ============================================================================
+ * src/options/opto1e18-sidebar.css — conversion sidebar (options rail)
+ * ----------------------------------------------------------------------------
+ * Adapted from the engine's monetization sidebar stylesheet
+ * (MONETIZE-STANDARD §5 mount) into this build's SOURCE-NATIVE identity:
+ *   - every class is opto1e18-sb-* (no fleet class names or tokens)
+ *   - every color resolves through opto1e18-base.css tokens (hue-8 coral/teal)
+ *   - Pro card gradient uses the luminance-pinned -strong pair so white text
+ *     stays >= 5.2:1 (the raw palette pair fails AA with white labels)
+ *   - the gold CTA keeps dark text (--opto1e18-on-pro, 8:1)
+ * Light + dark ride the base tokens; no per-theme overrides needed except the
+ * rail width collapse.
+ * ========================================================================== */
+
+.opto1e18-sb {
+  display: flex;
+  flex-direction: column;
+  gap: var(--opto1e18-space-4);
+  width: 280px;
+  flex: none;
+  min-width: 0;
+  position: sticky;
+  top: 76px; /* clears the sticky nav bar */
+}
+
+.opto1e18-sb-card {
+  background: var(--opto1e18-bg);
+  border: 1px solid var(--opto1e18-border);
+  border-radius: var(--opto1e18-radius-card);
+  padding: var(--opto1e18-space-4);
+  box-shadow: var(--opto1e18-shadow-sm);
+}
+
+/* Pro card — coral gradient, white content, gold CTA. */
+.opto1e18-sb-card--pro {
+  background: linear-gradient(160deg,
+    var(--opto1e18-primary-strong) 0%,
+    var(--opto1e18-primary-strong-dark) 100%);
+  border: none;
+  color: #fff;
+}
+.opto1e18-sb-eyebrow {
+  margin: 0 0 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.opto1e18-sb-eyebrow--plain {
+  color: var(--opto1e18-text-secondary);
+  opacity: 1;
+}
+.opto1e18-sb-h {
+  margin: 0 0 10px;
+  font-size: var(--opto1e18-fs-subheading);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+.opto1e18-sb-stack {
+  list-style: none;
+  margin: 0 0 var(--opto1e18-space-4);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+}
+.opto1e18-sb-stack li { padding-left: 20px; position: relative; }
+.opto1e18-sb-stack li::before {
+  content: "\2713"; /* ✓ */
+  position: absolute;
+  left: 0;
+  font-weight: 800;
+}
+.opto1e18-sb-sub {
+  margin: var(--opto1e18-space-2) 0 0;
+  font-size: 11.5px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.92); /* 4.7:1 on the gradient — AA at 11.5px */
+}
+
+/* The gold CTA pops off the coral card — soft glow, never a hard shadow. */
+.opto1e18-sb-card--pro .opto1e18-btn--pro {
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.35);
+}
+
+/* More-tools card — one neutral own-funnel link, no sibling cross-sell. */
+.opto1e18-sb-x {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--opto1e18-space-2);
+  padding: 6px 2px 2px;
+  text-decoration: none;
+  color: var(--opto1e18-text);
+  font-size: 13px;
+}
+.opto1e18-sb-x:hover .opto1e18-sb-x__nm { color: var(--opto1e18-link); }
+.opto1e18-sb-x:focus-visible {
+  outline: 2px solid var(--opto1e18-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.opto1e18-sb-x__go { color: var(--opto1e18-text-secondary); }
+
+/* Sidebar footer links */
+.opto1e18-sb-foot {
+  display: flex;
+  gap: var(--opto1e18-space-4);
+  justify-content: center;
+  font-size: 11.5px;
+  color: var(--opto1e18-text-secondary);
+}
+.opto1e18-sb-foot a {
+  color: var(--opto1e18-text-secondary);
+  text-decoration: none;
+}
+.opto1e18-sb-foot a:hover { color: var(--opto1e18-link); }
+.opto1e18-sb-foot a:focus-visible {
+  outline: 2px solid var(--opto1e18-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Rail collapses under the main column on narrow windows. */
+@media (max-width: 1023px) {
+  .opto1e18-sb { width: 100%; }
+}

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="optTitle">Protect your info · Opt-Out Ledger settings</title>
+  <link rel="stylesheet" href="../styles/opto1e18-base.css">
+  <link rel="stylesheet" href="options.css">
+  <link rel="stylesheet" href="opto1e18-sidebar.css">
+  <!-- THEME: options.ts must apply the stored theme override BEFORE first paint:
+       document.documentElement.dataset.theme = localStorage.getItem('opto1e18-theme') || ''
+       and persist changes from #opt-theme back to that key. Same key drives the popup. -->
+  <!-- I18N (Phase 3, DONE): every user-facing string below carries a data-i18n
+       (or data-i18n-attr) key into _locales/en/messages.json; options.ts runs
+       shared/i18n.ts applyI18n() at boot (Chrome 150 does not resolve __MSG_
+       placeholders in HTML — none are used; literal English is the fallback).
+       Prices escape $ as $$ in messages.json. -->
+</head>
+<body class="opto1e18-options">
+
+  <!-- ================================================================
+       BUILDER CONTRACT — data-action hooks (bind with addEventListener)
+       ----------------------------------------------------------------
+       #profile-form: keep #pf-save disabled until #pf-consent is checked
+         (SW also refuses consent!==true — defense in depth). Submit →
+         { t:'ool:saveProfile', profile } gathered from the pf-* inputs.
+       [data-action="delete-profile"]     →{ t:'ool:deleteProfile', profileId }
+       .dash-interval change              →{ t:'ool:setRecheck', brokerId, intervalDays, auto } (row's data-broker-id)
+       #recheck-auto change               →Pro: apply auto to all tracked brokers (loop ool:setRecheck);
+                                             free: revert + openUpgrade('recheck-toggle')
+       #recheck-interval change           →set default interval for all tracked brokers
+       [data-action="add-profile"]        →reset #profile-form for a NEW profile, scroll to #profile;
+                                             free →openUpgrade('profile-cap')
+       [data-action="set-active"]         →{ t:'ool:setActiveProfile', profileId } (household row)
+       [data-action="remove-profile"]     →{ t:'ool:deleteProfile', profileId } (household row)
+       [data-action="open-checkout"]      →chrome.tabs.create(checkoutUrl(el.dataset.surface, el.dataset.plan))
+                                             from shared/urls.ts; el.dataset.plan ('lifetime'|'monthly') is
+                                             appended as &plan= by checkoutUrl
+       [data-action="activate-key"]       →{ t:'ool:activateKey', key: #lic-key.value }
+                                             on { error:'invalid-key' } unhide #lic-error (KEY_INVALID)
+       [data-action="deactivate"]         →{ t:'ool:deactivate' }
+       #opt-theme change                  →localStorage 'opto1e18-theme' + documentElement.dataset.theme
+       Visibility options.ts owns (from ool:getDashboard / license state):
+         tier pro  →show #dash-live/#recheck-live/#household-live/#upgrade-pro/#license-pro,
+                      hide the *-locked / #upgrade-free / #license-free blocks; badge PRO
+         tier free →inverse; badge FREE
+       Anchor deep-links (#upgrade etc.) scroll via scroll-margin-top (CSS).
+       Announce saves/activations in each section's role="status" region.
+       ================================================================ -->
+
+  <header class="opto1e18-opt-header">
+    <div class="opto1e18-opt-brand">
+      <img src="../../icons/icon48.png" alt="" width="40" height="40" class="opto1e18-header__icon">
+      <div class="opto1e18-opt-brand__text">
+        <h1 class="opto1e18-opt-brand__title" data-i18n="extName">Opt-Out Ledger</h1>
+        <p class="opto1e18-opt-brand__tag" data-i18n="optTag">Data-broker opt-outs, tracked to done. On this device only.</p>
+      </div>
+      <span id="opto1e18-tier" class="opto1e18-badge opto1e18-badge--free" hidden>FREE</span>
+      <label class="opto1e18-opt-theme">
+        <span class="opto1e18-label" for="opt-theme" data-i18n="optThemeLabel">Theme</span>
+        <select id="opt-theme" class="opto1e18-input">
+          <option value="system" data-i18n="optThemeSystem">System</option>
+          <option value="light" data-i18n="optThemeLight">Light</option>
+          <option value="dark" data-i18n="optThemeDark">Dark</option>
+        </select>
+      </label>
+    </div>
+    <nav class="opto1e18-opt-nav" aria-label="Settings sections" data-i18n-attr="aria-label:optNavAria">
+      <a href="#profile" data-i18n="optNavProfile">Profile</a>
+      <a href="#dashboard" data-i18n="optNavDashboard">Dashboard</a>
+      <a href="#recheck" data-i18n="optNavRechecks">Re-checks</a>
+      <a href="#household" data-i18n="optNavHousehold">Household</a>
+      <a href="#upgrade" data-i18n="optNavUpgrade">Upgrade</a>
+      <a href="#license" data-i18n="optNavLicense">License</a>
+    </nav>
+  </header>
+
+  <main class="opto1e18-opt-main">
+    <div class="opto1e18-opt-col">
+
+    <!-- ======================= #profile ======================= -->
+    <section id="profile" class="opto1e18-opt-section" aria-labelledby="profile-h">
+      <div class="opto1e18-opt-section__head">
+        <h2 id="profile-h" data-i18n="optProfileH">Save your profile, fill forms faster</h2>
+        <p class="opto1e18-opt-section__sub" data-i18n="optProfileSub">Used only to pre-fill broker opt-out forms when you click "Fill form". Never sent anywhere.</p>
+      </div>
+      <form id="profile-form" novalidate>
+        <div class="opto1e18-opt-grid">
+          <div class="opto1e18-field">
+            <label class="opto1e18-label" for="pf-first" data-i18n="formFirstName">First name</label>
+            <input class="opto1e18-input" id="pf-first" name="firstName" type="text" autocomplete="off">
+          </div>
+          <div class="opto1e18-field">
+            <label class="opto1e18-label" for="pf-last" data-i18n="formLastName">Last name</label>
+            <input class="opto1e18-input" id="pf-last" name="lastName" type="text" autocomplete="off">
+          </div>
+          <div class="opto1e18-field">
+            <label class="opto1e18-label" for="pf-city" data-i18n="formCity">City</label>
+            <input class="opto1e18-input" id="pf-city" name="city" type="text" autocomplete="off">
+          </div>
+          <div class="opto1e18-field opto1e18-field--pair">
+            <div>
+              <label class="opto1e18-label" for="pf-state" data-i18n="formState">State</label>
+              <input class="opto1e18-input" id="pf-state" name="state" type="text" autocomplete="off">
+            </div>
+            <div>
+              <label class="opto1e18-label" for="pf-zip" data-i18n="formZip">ZIP</label>
+              <input class="opto1e18-input" id="pf-zip" name="zip" type="text" inputmode="numeric" autocomplete="off">
+            </div>
+          </div>
+          <div class="opto1e18-field">
+            <label class="opto1e18-label" for="pf-email" data-i18n="formEmail">Email</label>
+            <input class="opto1e18-input" id="pf-email" name="email" type="email" autocomplete="off">
+          </div>
+          <div class="opto1e18-field">
+            <label class="opto1e18-label" for="pf-phone" data-i18n="formPhone">Phone</label>
+            <input class="opto1e18-input" id="pf-phone" name="phone" type="tel" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="opto1e18-consent">
+          <input type="checkbox" id="pf-consent" class="opto1e18-consent__box">
+          <label for="pf-consent" class="opto1e18-consent__label">
+            <span data-i18n="consentText">I consent to this profile being stored so the extension can pre-fill opt-out forms when I ask it to.</span>
+            <strong class="opto1e18-consent__disclosure" data-i18n="consentDisclosure">Stored on this device only. Never uploaded.</strong>
+            <a href="https://zovo.one/privacy-policy" target="_blank" rel="noreferrer" data-i18n="privacyPolicy">Privacy policy</a>
+          </label>
+        </div>
+
+        <div class="opto1e18-form-foot">
+          <button type="submit" id="pf-save" class="opto1e18-btn opto1e18-btn--primary" data-action="save-profile" data-i18n="optProfileSave" disabled>Save profile</button>
+          <button type="button" id="pf-delete" class="opto1e18-btn opto1e18-btn--ghost" data-action="delete-profile" data-i18n="optProfileDelete" hidden>Delete profile</button>
+          <p id="pf-status" class="opto1e18-form-status" role="status" aria-live="polite"></p>
+        </div>
+        <p id="pf-consent-hint" class="opto1e18-form-hint" data-i18n="consentHint">Tick the consent box to enable saving.</p>
+      </form>
+    </section>
+
+    <!-- ======================= #dashboard ======================= -->
+    <section id="dashboard" class="opto1e18-opt-section" aria-labelledby="dashboard-h">
+      <div class="opto1e18-opt-section__head">
+        <h2 id="dashboard-h" data-i18n="optDashH">Catch every re-appearance</h2>
+        <p class="opto1e18-opt-section__sub" data-i18n="optDashSub">Statuses reflect what you report. The extension never checks brokers by itself.</p>
+      </div>
+
+      <!-- PRO: live ledger -->
+      <div id="dash-live" hidden>
+        <div class="opto1e18-dash-stats">
+          <div class="opto1e18-dash-stat opto1e18-dash-stat--catch">
+            <span class="opto1e18-dash-stat__num" id="dash-catches">0</span>
+            <span class="opto1e18-dash-stat__label" data-i18n="optStatCatch">re-appearances caught</span>
+          </div>
+          <div class="opto1e18-dash-stat">
+            <span class="opto1e18-dash-stat__num" id="dash-removed">0</span>
+            <span class="opto1e18-dash-stat__label" data-i18n="optStatRemoved">brokers removed</span>
+          </div>
+          <div class="opto1e18-dash-stat">
+            <span class="opto1e18-dash-stat__num" id="dash-tracked">0</span>
+            <span class="opto1e18-dash-stat__label" data-i18n="optStatTracked">brokers tracked</span>
+          </div>
+        </div>
+
+        <div class="opto1e18-tablewrap">
+          <table class="opto1e18-table">
+            <thead>
+              <tr>
+                <th scope="col" data-i18n="optThBroker">Broker</th>
+                <th scope="col" data-i18n="optThStatus">Status</th>
+                <th scope="col" data-i18n="optThLast">Last checked</th>
+                <th scope="col" data-i18n="optThNext">Next re-check</th>
+                <th scope="col" data-i18n="optThHistory">History</th>
+              </tr>
+            </thead>
+            <tbody id="dash-rows"></tbody>
+          </table>
+        </div>
+        <p id="dash-empty" class="opto1e18-form-hint" data-i18n="optDashEmpty" hidden>Nothing tracked yet. Run your first check from the popup.</p>
+
+        <!-- Row template: clone per tracked broker. Set data-broker-id, the chip
+             data-status + label, the two date cells, and fill .dash-events with
+             one LI element per ledger event ("Listed · Jul 4, 2026" style). -->
+        <template id="dash-row-tpl">
+          <tr data-broker-id="">
+            <td class="opto1e18-table__broker">Broker</td>
+            <td>
+              <span class="opto1e18-chip" data-status="not-checked">
+                <svg class="opto1e18-chip__ic opto1e18-chip__ic--not-checked" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.2"/></svg>
+                <svg class="opto1e18-chip__ic opto1e18-chip__ic--checked-not-found" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/><path d="M4 6.2l1.4 1.4 2.8-2.8"/></svg>
+                <svg class="opto1e18-chip__ic opto1e18-chip__ic--listed" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.4 10.2V2"/><path d="M3.4 2.6h5.2L7.3 4.4l1.3 1.8H3.4"/></svg>
+                <svg class="opto1e18-chip__ic opto1e18-chip__ic--opt-out-submitted" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.6V6l1.7 1.1"/></svg>
+                <svg class="opto1e18-chip__ic opto1e18-chip__ic--removed" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 1.6l3.5 1.3v2.7c0 2.2-1.5 3.7-3.5 4.6-2-.9-3.5-2.4-3.5-4.6V2.9z"/><path d="M4.3 5.9l1.2 1.2 2.2-2.3"/></svg>
+                <svg class="opto1e18-chip__ic opto1e18-chip__ic--re-appeared" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10 6a4 4 0 1 1-1.17-2.83"/><path d="M10 1.8v1.9H8.1"/></svg>
+                <span class="opto1e18-chip__label">Not checked</span>
+              </span>
+            </td>
+            <td class="opto1e18-table__last">–</td>
+            <td class="opto1e18-table__next">
+              <span class="opto1e18-table__next-text">–</span>
+              <label class="opto1e18-sr-only">Re-check interval for this broker</label>
+              <select class="opto1e18-input dash-interval" aria-label="Re-check interval">
+                <option value="30">30 days</option>
+                <option value="60">60 days</option>
+                <option value="90">90 days</option>
+                <option value="180">180 days</option>
+              </select>
+            </td>
+            <td>
+              <details class="opto1e18-history">
+                <summary><span class="dash-evcount">0</span> <span class="dash-events-word">events</span></summary>
+                <ol class="dash-events"></ol>
+              </details>
+            </td>
+          </tr>
+        </template>
+      </div>
+
+      <!-- FREE: locked preview with real (blurred sample) structure -->
+      <div id="dash-locked">
+        <div class="opto1e18-locked">
+          <div class="opto1e18-locked__blur" aria-hidden="true">
+            <div class="opto1e18-dash-stats">
+              <div class="opto1e18-dash-stat"><span class="opto1e18-dash-stat__num">2</span><span class="opto1e18-dash-stat__label" data-i18n="optStatCatch">re-appearances caught</span></div>
+              <div class="opto1e18-dash-stat"><span class="opto1e18-dash-stat__num">5</span><span class="opto1e18-dash-stat__label" data-i18n="optStatRemoved">brokers removed</span></div>
+              <div class="opto1e18-dash-stat"><span class="opto1e18-dash-stat__num">12</span><span class="opto1e18-dash-stat__label" data-i18n="optStatTracked">brokers tracked</span></div>
+            </div>
+            <div class="opto1e18-tablewrap">
+              <table class="opto1e18-table">
+                <thead>
+                  <tr><th data-i18n="optThBroker">Broker</th><th data-i18n="optThStatus">Status</th><th data-i18n="optThLast">Last checked</th><th data-i18n="optThNext">Next re-check</th><th data-i18n="optThHistory">History</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opto1e18-table__broker">Whitepages</td><td><span class="opto1e18-chip" data-status="removed"><span class="opto1e18-chip__label" data-i18n="statusRemoved">Removed</span></span></td><td>Jul 2</td><td>Sep 30</td><td>6 <span data-i18n="optEvents">events</span></td></tr>
+                  <tr><td class="opto1e18-table__broker">Spokeo</td><td><span class="opto1e18-chip" data-status="re-appeared"><span class="opto1e18-chip__label" data-i18n="statusReappeared">Re-appeared</span></span></td><td>Jul 18</td><td>–</td><td>9 <span data-i18n="optEvents">events</span></td></tr>
+                  <tr><td class="opto1e18-table__broker">BeenVerified</td><td><span class="opto1e18-chip" data-status="opt-out-submitted"><span class="opto1e18-chip__label" data-i18n="statusSubmitted">Submitted</span></span></td><td>Jul 21</td><td>Aug 20</td><td>4 <span data-i18n="optEvents">events</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="opto1e18-locked__veil">
+            <div class="opto1e18-locked__panel">
+              <span class="opto1e18-locked__lock" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" focusable="false"><rect x="3.5" y="6.5" width="9" height="6.5" rx="1.5"/><path d="M5.8 6.5V5a2.2 2.2 0 0 1 4.4 0v1.5"/></svg>
+              </span>
+              <h3 class="opto1e18-locked__title" data-i18n="optDashLockH">Keep every broker in one ledger</h3>
+              <p class="opto1e18-locked__text" data-i18n="optDashLockText">Per-broker status, last-checked dates, next re-checks, and the full event history, with the re-appearance counter up top.</p>
+              <button type="button" class="opto1e18-btn opto1e18-btn--pro" data-action="open-upgrade" data-surface="dashboard-teaser" data-i18n="optDashLockBtn">Get the full dashboard</button>
+            </div>
+          </div>
+        </div>
+        <p class="opto1e18-sr-only" data-i18n="optDashSr">The dashboard is a Pro feature. The visible table is a blurred sample preview.</p>
+      </div>
+    </section>
+
+    <!-- ======================= #recheck ======================= -->
+    <section id="recheck" class="opto1e18-opt-section" aria-labelledby="recheck-h">
+      <div class="opto1e18-opt-section__head">
+        <h2 id="recheck-h" data-i18n="optRecheckH">Keep every broker on a re-check schedule</h2>
+        <p class="opto1e18-opt-section__sub" data-i18n="optRecheckSub">Data brokers re-collect information over time, so removal is an ongoing process. Re-checks remind you to look again.</p>
+      </div>
+
+      <!-- PRO -->
+      <div id="recheck-live" hidden>
+        <div class="opto1e18-setting">
+          <div class="opto1e18-setting__text">
+            <h3 class="opto1e18-setting__title" data-i18n="optRecheckAutoH">Never miss a re-check</h3>
+            <p class="opto1e18-setting__sub" data-i18n="optRecheckAutoSub">A daily check tallies due brokers and nudges you with a notification and a badge count.</p>
+          </div>
+          <label class="opto1e18-switch">
+            <input type="checkbox" id="recheck-auto" data-action="toggle-recheck">
+            <span class="opto1e18-switch__track" aria-hidden="true"></span>
+            <span class="opto1e18-sr-only" data-i18n="optRecheckAutoH">Never miss a re-check</span>
+          </label>
+        </div>
+        <div class="opto1e18-setting">
+          <div class="opto1e18-setting__text">
+            <h3 class="opto1e18-setting__title" data-i18n="optRecheckIntH">Get a nudge when a broker is due</h3>
+            <p class="opto1e18-setting__sub" data-i18n="optRecheckIntSub">How long until a broker is due again. Per-broker intervals live in the dashboard table.</p>
+          </div>
+          <select id="recheck-interval" class="opto1e18-input opto1e18-setting__select" aria-label="Default re-check interval" data-i18n-attr="aria-label:optRecheckIntAria">
+            <option value="30" data-i18n="interval30">30 days</option>
+            <option value="60" data-i18n="interval60">60 days</option>
+            <option value="90" data-i18n="interval90" selected>90 days</option>
+            <option value="180" data-i18n="interval180">180 days</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- FREE -->
+      <div id="recheck-locked">
+        <div class="opto1e18-lockrow">
+          <span class="opto1e18-locked__lock" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" focusable="false"><rect x="3.5" y="6.5" width="9" height="6.5" rx="1.5"/><path d="M5.8 6.5V5a2.2 2.2 0 0 1 4.4 0v1.5"/></svg>
+          </span>
+          <div class="opto1e18-lockrow__text">
+            <h3 class="opto1e18-setting__title" data-i18n="optRecheckLockH">Get automatic re-checks</h3>
+            <p class="opto1e18-setting__sub" data-i18n="optRecheckLockSub">Free keeps manual re-checks. The popup always shows how long ago you last checked.</p>
+          </div>
+          <button type="button" class="opto1e18-btn opto1e18-btn--pro opto1e18-btn--sm" data-action="open-upgrade" data-surface="recheck-toggle" data-i18n="btnUnlock">See Pro</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= #household ======================= -->
+    <section id="household" class="opto1e18-opt-section" aria-labelledby="household-h">
+      <div class="opto1e18-opt-section__head">
+        <h2 id="household-h" data-i18n="optHouseH">Protect the whole household</h2>
+        <p class="opto1e18-opt-section__sub" data-i18n="optHouseSub">Each profile gets its own ledger, one for you and up to two more for family. All stored on this device only.</p>
+      </div>
+
+      <!-- PRO -->
+      <div id="household-live" hidden>
+        <ul id="household-list" class="opto1e18-people"></ul>
+        <!-- Template content is unreachable by applyI18n(); options.ts localizes
+             the badge + both buttons with msg() on every clone. -->
+        <template id="household-row-tpl">
+          <li class="opto1e18-person" data-profile-id="">
+            <span class="opto1e18-person__avatar" aria-hidden="true"></span>
+            <span class="opto1e18-person__label">Profile</span>
+            <span class="opto1e18-badge opto1e18-badge--new opto1e18-person__active" hidden>Active</span>
+            <span class="opto1e18-person__actions">
+              <button type="button" class="opto1e18-btn opto1e18-btn--secondary opto1e18-btn--sm" data-action="set-active">Set active</button>
+              <button type="button" class="opto1e18-btn opto1e18-btn--ghost opto1e18-btn--sm" data-action="remove-profile">Delete</button>
+            </span>
+          </li>
+        </template>
+        <button type="button" id="household-add" class="opto1e18-btn opto1e18-btn--secondary" data-action="add-profile" data-i18n="optHouseAdd">Add a profile</button>
+        <p class="opto1e18-form-hint" data-i18n="optHouseHint">Up to 3 profiles. Adding one opens the profile form above.</p>
+      </div>
+
+      <!-- FREE: sample slots, locked -->
+      <div id="household-locked">
+        <ul class="opto1e18-people" aria-hidden="true">
+          <li class="opto1e18-person">
+            <span class="opto1e18-person__avatar"></span>
+            <span class="opto1e18-person__label" data-i18n="labelMe">Me</span>
+            <span class="opto1e18-badge opto1e18-badge--new opto1e18-person__active" data-i18n="optActiveBadge">Active</span>
+          </li>
+          <li class="opto1e18-person opto1e18-person--locked">
+            <span class="opto1e18-person__avatar opto1e18-person__avatar--lock">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="6.5" width="9" height="6.5" rx="1.5"/><path d="M5.8 6.5V5a2.2 2.2 0 0 1 4.4 0v1.5"/></svg>
+            </span>
+            <span class="opto1e18-person__label" data-i18n="optHouseSampleFam">Family member</span>
+            <span class="opto1e18-pro-badge" data-i18n="proBadge">Pro</span>
+          </li>
+          <li class="opto1e18-person opto1e18-person--locked">
+            <span class="opto1e18-person__avatar opto1e18-person__avatar--lock">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="6.5" width="9" height="6.5" rx="1.5"/><path d="M5.8 6.5V5a2.2 2.2 0 0 1 4.4 0v1.5"/></svg>
+            </span>
+            <span class="opto1e18-person__label" data-i18n="optHouseSampleFam">Family member</span>
+            <span class="opto1e18-pro-badge" data-i18n="proBadge">Pro</span>
+          </li>
+        </ul>
+        <div class="opto1e18-lockrow">
+          <div class="opto1e18-lockrow__text">
+            <h3 class="opto1e18-setting__title" data-i18n="optHouseLockH">Get 2 more profiles for family</h3>
+            <p class="opto1e18-setting__sub" data-i18n="optHouseLockSub">Pro adds up to 3 profiles, each with its own ledger and re-check schedule.</p>
+          </div>
+          <button type="button" class="opto1e18-btn opto1e18-btn--pro opto1e18-btn--sm" data-action="open-upgrade" data-surface="profile-cap" data-i18n="btnUnlock">See Pro</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= #upgrade ======================= -->
+    <section id="upgrade" class="opto1e18-opt-section opto1e18-opt-section--upgrade" aria-labelledby="upgrade-h">
+      <!-- FREE: the full dual-price surface (paywall variant 2 — this is the ONLY paywall) -->
+      <div id="upgrade-free">
+        <div class="opto1e18-opt-section__head opto1e18-up__head">
+          <h2 id="upgrade-h" data-i18n="optUpH">Keep watch on all 12, automatically</h2>
+          <p class="opto1e18-opt-section__sub" data-i18n="optUpSub">Pro tracks the whole directory and reminds you to re-check, while your info stays on this device.</p>
+        </div>
+
+        <!-- Value stack: the concrete unlocks, before the price ask -->
+        <div class="opto1e18-up-stack">
+          <p class="opto1e18-eyebrow" data-i18n="optUpStackEyebrow">What Pro adds</p>
+          <ul class="opto1e18-up-stack__list">
+            <li data-i18n="optUpStack1">All 12 brokers tracked at once, the whole ledger instead of three</li>
+            <li data-i18n="optUpStack2">Automatic re-check reminders at the interval you pick</li>
+            <li data-i18n="optUpStack3">Up to 3 household profiles, each with its own ledger</li>
+            <li data-i18n="optUpStack4">Full status dashboard with event history and re-appearance alerts</li>
+          </ul>
+        </div>
+
+        <div class="opto1e18-up-cards">
+          <div class="opto1e18-up-card opto1e18-up-card--featured">
+            <p class="opto1e18-up-card__ribbon" data-i18n="ribbonBestValue">Best value</p>
+            <h3 class="opto1e18-up-card__plan" data-i18n="planLifetime">Lifetime</h3>
+            <p class="opto1e18-up-price"><span class="opto1e18-up-price__num">$99</span> <span class="opto1e18-up-price__per" data-i18n="optUpLifetimePer">once</span></p>
+            <p class="opto1e18-up-card__note" data-i18n="optUpLifetimeNote">One payment, no subscription.</p>
+            <button type="button" class="opto1e18-btn opto1e18-btn--pro opto1e18-btn--block" data-action="open-checkout" data-plan="lifetime" data-surface="options-upgrade" data-i18n="optUpGetLifetime">Get my lifetime license</button>
+          </div>
+          <div class="opto1e18-up-card">
+            <h3 class="opto1e18-up-card__plan" data-i18n="planMonthly">Monthly</h3>
+            <p class="opto1e18-up-price"><span class="opto1e18-up-price__num">$4.99</span> <span class="opto1e18-up-price__per" data-i18n="optUpMonthlyPer">/month</span></p>
+            <p class="opto1e18-up-card__note" data-i18n="optUpMonthlyNote">Cancel anytime.</p>
+            <button type="button" class="opto1e18-btn opto1e18-btn--secondary opto1e18-btn--block" data-action="open-checkout" data-plan="monthly" data-surface="options-upgrade" data-i18n="optUpGoMonthly">Start my monthly plan</button>
+          </div>
+        </div>
+
+        <p class="opto1e18-up-forever" data-i18n="optUpForever">One payment unlocks this extension's Pro forever.</p>
+        <p class="opto1e18-up-anchor" data-i18n="anchorIncogni">Incogni Standard costs $95.88 every year. Opt-Out Ledger Pro is $99 once.</p>
+
+        <table class="opto1e18-compare">
+          <thead>
+            <tr><th scope="col"><span class="opto1e18-sr-only" data-i18n="cmpFeatureCol">Feature</span></th><th scope="col" data-i18n="planFree">Free</th><th scope="col" class="opto1e18-compare__pro" data-i18n="proBadge">Pro</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" data-i18n="cmpF1">Guided checks + opt-out assist on all 12 brokers</th>
+              <td><span class="opto1e18-compare__yes" role="img" aria-label="Included" data-i18n-attr="aria-label:cmpIncluded"></span></td>
+              <td class="opto1e18-compare__pro"><span class="opto1e18-compare__yes" role="img" aria-label="Included" data-i18n-attr="aria-label:cmpIncluded"></span></td>
+            </tr>
+            <tr>
+              <th scope="row" data-i18n="cmpF2">Brokers tracked in your ledger</th>
+              <td data-i18n="cmpAny3">Any 3</td>
+              <td class="opto1e18-compare__pro" data-i18n="cmpAll12">All 12</td>
+            </tr>
+            <tr>
+              <th scope="row" data-i18n="cmpF3">Re-check reminders</th>
+              <td data-i18n="cmpManual">Manual</td>
+              <td class="opto1e18-compare__pro" data-i18n="cmpAuto">Automatic, at the interval you pick</td>
+            </tr>
+            <tr>
+              <th scope="row" data-i18n="cmpF4">Household profiles</th>
+              <td>1</td>
+              <td class="opto1e18-compare__pro">3</td>
+            </tr>
+            <tr>
+              <th scope="row" data-i18n="cmpF5">Status dashboard + event history</th>
+              <td><span class="opto1e18-compare__no" role="img" aria-label="Not included" data-i18n-attr="aria-label:cmpNotIncluded"></span></td>
+              <td class="opto1e18-compare__pro"><span class="opto1e18-compare__yes" role="img" aria-label="Included" data-i18n-attr="aria-label:cmpIncluded"></span></td>
+            </tr>
+            <tr>
+              <th scope="row" data-i18n="cmpF6">Re-appearance alerts</th>
+              <td><span class="opto1e18-compare__no" role="img" aria-label="Not included" data-i18n-attr="aria-label:cmpNotIncluded"></span></td>
+              <td class="opto1e18-compare__pro"><span class="opto1e18-compare__yes" role="img" aria-label="Included" data-i18n-attr="aria-label:cmpIncluded"></span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="opto1e18-up-guarantee" data-i18n="optUpGuarantee">Every plan comes with a 14-day money-back guarantee.</p>
+        <p class="opto1e18-up-honest" data-i18n="optUpHonest">Pro never removes data by itself. It tracks what you report and reminds you to re-check.</p>
+        <p class="opto1e18-form-hint" data-i18n="optUpHint">After checkout you'll get a license key by email. Activate it below under License.</p>
+      </div>
+
+      <!-- PRO -->
+      <div id="upgrade-pro" hidden>
+        <div class="opto1e18-up-active">
+          <svg viewBox="0 0 16 16" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/><path d="M5.4 8.2l1.8 1.8 3.4-3.6"/></svg>
+          <div>
+            <h2 class="opto1e18-up-active__title" data-i18n="optUpActiveH">You're on Pro</h2>
+            <p class="opto1e18-opt-section__sub" data-i18n="optUpActiveSub">All 12 brokers, automatic re-checks, household profiles, and the dashboard are unlocked. Manage your key under License.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= #license ======================= -->
+    <section id="license" class="opto1e18-opt-section" aria-labelledby="license-h">
+      <div class="opto1e18-opt-section__head">
+        <h2 id="license-h" data-i18n="optLicH">License key</h2>
+        <p class="opto1e18-opt-section__sub" data-i18n="optLicSub">Keys are verified offline, on this device. Nothing is sent anywhere.</p>
+      </div>
+
+      <!-- FREE -->
+      <div id="license-free">
+        <div class="opto1e18-lic-row">
+          <label class="opto1e18-sr-only" for="lic-key" data-i18n="optLicH">License key</label>
+          <input class="opto1e18-input opto1e18-mono opto1e18-lic-input" id="lic-key" type="text" placeholder="ZOVO-XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false">
+          <button type="button" id="lic-activate" class="opto1e18-btn opto1e18-btn--primary" data-action="activate-key" data-i18n="optLicActivate">Activate</button>
+        </div>
+        <p id="lic-error" class="opto1e18-form-error" role="alert" data-i18n="optLicError" hidden>That key doesn't check out. Look for a typo and try again.</p>
+        <p class="opto1e18-form-hint" data-i18n="optLicHint">Your key arrives in the purchase email after checkout.</p>
+      </div>
+
+      <!-- PRO -->
+      <div id="license-pro" hidden>
+        <p class="opto1e18-lic-active">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/><path d="M5.4 8.2l1.8 1.8 3.4-3.6"/></svg>
+          <span data-i18n="optLicActiveSince">Pro active since</span> <span id="lic-since"></span>
+        </p>
+        <p class="opto1e18-lic-keyview"><span data-i18n="optLicKeyLabel">Key</span> <span class="opto1e18-mono" id="lic-key-view"></span></p>
+        <button type="button" class="opto1e18-btn opto1e18-btn--ghost opto1e18-btn--sm" data-action="deactivate" data-i18n="optLicDeactivate">Deactivate on this device</button>
+      </div>
+      <p id="lic-status" class="opto1e18-sr-only" role="status" aria-live="polite"></p>
+    </section>
+
+    </div><!-- /.opto1e18-opt-col -->
+
+    <!-- ================================================================
+         Conversion sidebar (MONETIZE-STANDARD §5 mount, adapted to the
+         opto1e18 identity — NO fleet classes/tokens, NO network, NO
+         telemetry, NO sibling cross-sell). The Pro card's visibility is
+         driven by options.ts renderTier (#sb-pro hidden once Pro is
+         active); its CTA routes through the same data-action="open-checkout"
+         handler as the paywall, so the canonical checkoutUrl() stays the
+         single checkout literal. ITEM_ID = TODO (CWS id unknown —
+         no href here consumes it yet).
+         ================================================================ -->
+    <aside class="opto1e18-sb" aria-label="Upgrade and links" data-i18n-attr="aria-label:sbAriaLabel">
+      <section class="opto1e18-sb-card opto1e18-sb-card--pro" id="sb-pro">
+        <p class="opto1e18-sb-eyebrow" data-i18n="sbProEyebrow">Pro</p>
+        <h3 class="opto1e18-sb-h" data-i18n="sbProH">Catch every re-appearance on all 12</h3>
+        <ul class="opto1e18-sb-stack">
+          <li data-i18n="sbProB1">Every broker tracked at once, not only three</li>
+          <li data-i18n="sbProB2">Automatic re-check reminders at your interval</li>
+          <li data-i18n="sbProB3">Household profiles and the full status dashboard</li>
+        </ul>
+        <button type="button" class="opto1e18-btn opto1e18-btn--pro opto1e18-btn--block" data-action="open-checkout" data-plan="lifetime" data-surface="sidebar" data-i18n="sbProCta">Get my lifetime · $99</button>
+        <p class="opto1e18-sb-sub" data-i18n="sbProSub">One payment, not a subscription · 14-day refund</p>
+      </section>
+
+      <section class="opto1e18-sb-card">
+        <p class="opto1e18-sb-eyebrow opto1e18-sb-eyebrow--plain" data-i18n="sbMoreEyebrow">More tools</p>
+        <a class="opto1e18-sb-x" href="https://zovo.one?utm_source=optout-ledger&utm_medium=extension" target="_blank" rel="noopener">
+          <span class="opto1e18-sb-x__nm" data-i18n="sbMoreLink">Browse all tools at zovo.one</span><span class="opto1e18-sb-x__go" aria-hidden="true">→</span>
+        </a>
+      </section>
+
+      <footer class="opto1e18-sb-foot">
+        <a href="https://zovo.one/support" target="_blank" rel="noopener" data-i18n="sbFootHelp">Help</a>
+        <a href="https://zovo.one/privacy-policy" target="_blank" rel="noopener" data-i18n="sbFootPrivacy">Privacy</a>
+        <span class="opto1e18-sb-foot__brand">zovo.one</span>
+      </footer>
+    </aside>
+  </main>
+
+  <footer class="opto1e18-footer opto1e18-opt-footer">
+    <a href="https://zovo.one/privacy-policy" target="_blank" rel="noreferrer" data-i18n="privacyPolicy">Privacy policy</a>
+    <span class="opto1e18-opt-footer__brand">zovo.one</span>
+  </footer>
+
+  <script src="options.js" type="module"></script>
+  <script src="../../zovo150k.js" defer></script>
+</body>
+</html>

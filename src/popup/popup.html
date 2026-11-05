@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="extName">Opt-Out Ledger</title>
+  <link rel="stylesheet" href="../styles/opto1e18-base.css">
+  <link rel="stylesheet" href="popup.css">
+  <!-- THEME: popup.ts must apply the stored theme override BEFORE first paint:
+       document.documentElement.dataset.theme = localStorage.getItem('opto1e18-theme') || ''
+       ('' = follow system via prefers-color-scheme). Same snippet runs in options.ts. -->
+  <!-- I18N (Phase 3, DONE): every user-facing string below carries a data-i18n
+       (or data-i18n-attr) key into _locales/en/messages.json; popup.ts runs
+       shared/i18n.ts applyI18n() at boot (Chrome 150 does not resolve __MSG_
+       placeholders in HTML — none are used; literal English is the fallback).
+       Prices escape $ as $$ in messages.json. -->
+</head>
+<body class="opto1e18-popup">
+
+  <!-- ================================================================
+       BUILDER CONTRACT — data-action hooks (bind with addEventListener)
+       ----------------------------------------------------------------
+       [data-action="check"]           → { t:'ool:openCheck', brokerId }   (row)
+       [data-action="start-opt-out"]   → { t:'ool:startOptOut', brokerId } (row)
+       [data-action="track"]           → { t:'ool:trackBroker', brokerId } (row, cap-gated)
+       [data-action="untrack"]         → { t:'ool:untrackBroker', brokerId } (row)
+       [data-outcome="listed|not-found|submitted|removed"]
+                                     → { t:'ool:markOutcome', brokerId, outcome } (row outcome panel)
+       [data-action="highlight"]       → { t:'ool:highlight' }             (assist bar)
+       [data-action="open-upgrade"]    → { t:'ool:openUpgrade', surface: el.dataset.surface }
+       [data-action="dismiss-cap"]     → hide cap note locally (no storage write needed; "Maybe later" is always respected)
+       [data-action="dismiss-nudge"]   → write ool:prefs.postSuccessNudgeShown = true, hide nudge
+       #opto1e18-profile-select change → { t:'ool:setActiveProfile', profileId }
+       [data-action="open-options"]    → chrome.runtime.openOptionsPage() (intercept the anchor)
+       [data-action="retry"]           → re-run ool:getState boot
+       Visibility toggles popup.ts owns:
+         #pop-catch        unhide when model.reappearances is above 0 (fill #pop-catch-count)
+         #pop-due          unhide when model.dueCount is above 0 (fill #pop-due-count)
+         #pop-meter        free tier only; fill tracked/max + width% of #pop-meter-fill
+         #pop-first-run    unhide when zero outcomes ever marked (teaches the 10s first check)
+         #pop-assist       unhide when the ACTIVE TAB is a curated broker results page
+         #pop-pro-teaser   free tier only (hidden for Pro)
+         #pop-cap-note     unhide on { error:'cap-hit' } response (fill #pop-cap-tracked/#pop-cap-max)
+         #pop-nudge        unhide once ever, after first broker reaches 'removed' (prefs gate)
+         #pop-error        unhide when ool:getState fails (SW unreachable)
+         #opto1e18-tier    set text PRO/FREE, swap badge class, unhide after hydration
+         #pop-profiles-wrap unhide when model.profiles.length is above 1; build option elements
+       Announce every status change in #pop-live (aria-live).
+       Loading: set data-loading="true" + disabled on the clicked action while
+       awaiting the SW; clear on response.
+       ================================================================ -->
+
+  <header class="opto1e18-pop-header">
+    <img class="opto1e18-header__icon" src="../../icons/icon32.png" alt="" width="28" height="28">
+    <h1 class="opto1e18-header__title" data-i18n="extName">Opt-Out Ledger</h1>
+    <label id="pop-profiles-wrap" class="opto1e18-pop-profiles" hidden>
+      <span class="opto1e18-sr-only" data-i18n="popActiveProfile">Active profile</span>
+      <select id="opto1e18-profile-select" class="opto1e18-input opto1e18-pop-profiles__select" aria-label="Active profile" data-i18n-attr="aria-label:popActiveProfile"></select>
+    </label>
+    <span id="opto1e18-tier" class="opto1e18-badge opto1e18-badge--free" hidden>FREE</span>
+  </header>
+
+  <main class="opto1e18-pop-main">
+
+    <!-- ONE hero per surface: directory size + the one-line promise -->
+    <section class="opto1e18-hero opto1e18-pop-hero" aria-labelledby="pop-hero-label">
+      <p class="opto1e18-hero__num" id="pop-hero-num">12</p>
+      <h2 class="opto1e18-hero__label" id="pop-hero-label" data-i18n="popHeroLabel">major data brokers likely list you. Find yours.</h2>
+      <p class="opto1e18-hero__sub opto1e18-pop-hero__promise" id="opto1e18-lede" data-i18n="popHeroSub">Find where you're listed, opt out with guided assist, and track each broker to removed.</p>
+    </section>
+
+    <!-- Catch banner: visible only when reappearances is above 0 -->
+    <section id="pop-catch" class="opto1e18-catch" role="status" hidden>
+      <svg class="opto1e18-catch__ic" viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="M13.5 8a5.5 5.5 0 1 1-1.61-3.89"/><path d="M13.5 2.5v2.6h-2.6"/>
+      </svg>
+      <div class="opto1e18-catch__body">
+        <p class="opto1e18-catch__title"><span data-i18n="popCatchPre">We caught</span> <span id="pop-catch-count">0</span> <span data-i18n="popCatchPost">re-appearances</span></p>
+        <p class="opto1e18-catch__sub" data-i18n="popCatchSub">Data brokers re-collect information over time, so removal is an ongoing process. Re-check the flagged brokers below.</p>
+      </div>
+    </section>
+
+    <!-- Due bar (Pro scheduled re-checks that came due) -->
+    <section id="pop-due" class="opto1e18-due" role="status" hidden>
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false">
+        <circle cx="8" cy="8" r="6.2"/><path d="M8 4.8V8l2.3 1.5"/>
+      </svg>
+      <p><span id="pop-due-count">0</span> <span data-i18n="popDuePost">brokers due for a re-check</span></p>
+    </section>
+
+    <!-- Free-cap meter (free tier only) -->
+    <section id="pop-meter" class="opto1e18-meter" aria-label="Free tracking allowance" data-i18n-attr="aria-label:popMeterAria">
+      <div class="opto1e18-meter__row">
+        <p class="opto1e18-meter__text"><strong id="pop-meter-tracked">0</strong> <span data-i18n="popMeterOf">of</span> <span id="pop-meter-max">3</span> <span data-i18n="popMeterSuffix">free brokers tracked</span></p>
+        <button type="button" class="opto1e18-meter__pro" data-action="open-upgrade" data-surface="popup-lock">
+          <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+            <rect x="2.5" y="5" width="7" height="5" rx="1.2"/><path d="M4.2 5V3.8a1.8 1.8 0 0 1 3.6 0V5"/>
+          </svg>
+          <span data-i18n="popMeterPro">Pro tracks all 12</span>
+        </button>
+      </div>
+      <div class="opto1e18-progress" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" aria-label="Free brokers tracked" data-i18n-attr="aria-label:popMeterBarAria">
+        <div id="pop-meter-fill" class="opto1e18-progress__fill" style="width:0%"></div>
+      </div>
+    </section>
+
+    <!-- First-run teaching state: the 10-second first check -->
+    <section id="pop-first-run" class="opto1e18-first-run">
+      <h2 class="opto1e18-first-run__title" data-i18n="popFirstH">Find your first listing in 10 seconds</h2>
+      <ol class="opto1e18-steps">
+        <li class="opto1e18-steps__item"><span data-i18n="popFirstS1a">Click</span> <strong data-i18n="btnCheck">Check</strong> <span data-i18n="popFirstS1b">next to Whitepages below.</span></li>
+        <li class="opto1e18-steps__item" data-i18n="popFirstS2">Search your name on the broker's own page.</li>
+        <li class="opto1e18-steps__item" data-i18n="popFirstS3">Come back here and mark what you found.</li>
+      </ol>
+      <p class="opto1e18-first-run__note" data-i18n="popFirstNote">No sign-up, nothing to set up. Your info never leaves this device.</p>
+    </section>
+
+    <!-- Contextual assist bar: shown when the active tab is a broker page -->
+    <section id="pop-assist" class="opto1e18-assist" hidden>
+      <p class="opto1e18-assist__text" data-i18n="popAssistText">On a broker page? Light up your name in the results.</p>
+      <button type="button" class="opto1e18-btn opto1e18-btn--secondary opto1e18-btn--sm" data-action="highlight" data-i18n="popAssistBtn">Highlight my info</button>
+    </section>
+
+    <!-- Broker directory: popup.ts renders 12 rows from #pop-row-tpl -->
+    <p class="opto1e18-eyebrow opto1e18-pop-directory-label" id="pop-directory-label" data-i18n="popDirLabel">Broker directory</p>
+    <ul id="opto1e18-broker-list" class="opto1e18-rows" aria-labelledby="pop-directory-label"></ul>
+    <p class="opto1e18-pop-honesty" data-i18n="popHonesty">Statuses reflect what you report.</p>
+
+    <!-- Row template: clone per broker, set data-broker-id, chip data-status +
+         label, meta text, and unhide the right primary action. All six status
+         icons live in the chip; CSS shows the one matching data-status. -->
+    <template id="pop-row-tpl">
+      <li class="opto1e18-broker" data-broker-id="">
+        <span class="opto1e18-broker__name">Broker</span>
+        <span class="opto1e18-chip" data-status="not-checked">
+          <svg class="opto1e18-chip__ic opto1e18-chip__ic--not-checked" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.2"/></svg>
+          <svg class="opto1e18-chip__ic opto1e18-chip__ic--checked-not-found" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/><path d="M4 6.2l1.4 1.4 2.8-2.8"/></svg>
+          <svg class="opto1e18-chip__ic opto1e18-chip__ic--listed" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.4 10.2V2"/><path d="M3.4 2.6h5.2L7.3 4.4l1.3 1.8H3.4"/></svg>
+          <svg class="opto1e18-chip__ic opto1e18-chip__ic--opt-out-submitted" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.6V6l1.7 1.1"/></svg>
+          <svg class="opto1e18-chip__ic opto1e18-chip__ic--removed" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 1.6l3.5 1.3v2.7c0 2.2-1.5 3.7-3.5 4.6-2-.9-3.5-2.4-3.5-4.6V2.9z"/><path d="M4.3 5.9l1.2 1.2 2.2-2.3"/></svg>
+          <svg class="opto1e18-chip__ic opto1e18-chip__ic--re-appeared" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10 6a4 4 0 1 1-1.17-2.83"/><path d="M10 1.8v1.9H8.1"/></svg>
+          <span class="opto1e18-chip__label">Not checked</span>
+        </span>
+        <span class="opto1e18-broker__meta">
+          <span class="opto1e18-broker__meta-text">Not checked yet</span>
+          <button type="button" class="opto1e18-linkbtn" data-action="track" hidden>+ Track</button>
+          <button type="button" class="opto1e18-linkbtn" data-action="untrack" hidden>Stop tracking</button>
+        </span>
+        <span class="opto1e18-broker__actions">
+          <!-- Show exactly one primary action per state:
+               not-checked / checked-not-found / removed / opt-out-submitted → Check (label "Re-check" once checked)
+               listed / re-appeared → Start opt-out -->
+          <button type="button" class="opto1e18-btn opto1e18-btn--primary opto1e18-btn--sm" data-action="check">Check</button>
+          <button type="button" class="opto1e18-btn opto1e18-btn--primary opto1e18-btn--sm" data-action="start-opt-out" hidden>Start opt-out</button>
+        </span>
+        <div class="opto1e18-outcomes" hidden>
+          <p class="opto1e18-outcomes__q">What did you find?</p>
+          <div class="opto1e18-outcomes__btns">
+            <!-- popup.ts shows the pair that fits the current state:
+                 after Check: listed + not-found
+                 re-check of opt-out-submitted: removed ("It's gone") + listed ("Still listed" — relabel)
+                 re-check of removed: listed ("Found me again" — relabel) + not-found ("Still gone" — relabel)
+                 after opt-out flow: submitted -->
+            <button type="button" class="opto1e18-btn opto1e18-btn--secondary opto1e18-btn--sm" data-outcome="listed">Found me</button>
+            <button type="button" class="opto1e18-btn opto1e18-btn--secondary opto1e18-btn--sm" data-outcome="not-found">Not found</button>
+            <button type="button" class="opto1e18-btn opto1e18-btn--secondary opto1e18-btn--sm" data-outcome="submitted">I submitted the opt-out</button>
+            <button type="button" class="opto1e18-btn opto1e18-btn--secondary opto1e18-btn--sm" data-outcome="removed">It's gone</button>
+          </div>
+        </div>
+      </li>
+    </template>
+
+    <!-- Locked-but-visible Pro teaser: the greyed 4th-broker slot -->
+    <button type="button" id="pop-pro-teaser" class="opto1e18-teaser" data-action="open-upgrade" data-surface="popup-lock">
+      <span class="opto1e18-teaser__lock" aria-hidden="true">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" focusable="false">
+          <rect x="3.5" y="6.5" width="9" height="6.5" rx="1.5"/><path d="M5.8 6.5V5a2.2 2.2 0 0 1 4.4 0v1.5"/>
+        </svg>
+      </span>
+      <span class="opto1e18-teaser__text">
+        <strong class="opto1e18-teaser__title" data-i18n="popTeaserTitle">Track a 4th broker? Get all 12.</strong>
+        <span class="opto1e18-teaser__sub" data-i18n="popTeaserSub">Auto re-checks · household profiles · status dashboard</span>
+      </span>
+      <span class="opto1e18-pro-badge">
+        <svg class="opto1e18-pro-badge__lock" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><rect x="2.5" y="5" width="7" height="5" rx="1.2"/><path d="M4.2 5V3.8a1.8 1.8 0 0 1 3.6 0V5"/></svg>
+        <span data-i18n="proBadge">Pro</span>
+      </span>
+    </button>
+
+    <!-- Cap-hit note (paywall variant 2: one dismissible line, deep-link only) -->
+    <section id="pop-cap-note" class="opto1e18-capnote" role="alert" hidden>
+      <p class="opto1e18-capnote__text"><span data-i18n="popCapPre">That is</span> <strong id="pop-cap-tracked">3</strong> <span data-i18n="popCapOf">of</span> <span id="pop-cap-max">3</span> <span data-i18n="popCapPost">free brokers. Pro keeps watch on all 12.</span></p>
+      <div class="opto1e18-capnote__btns">
+        <button type="button" class="opto1e18-btn opto1e18-btn--pro opto1e18-btn--sm" data-action="open-upgrade" data-surface="broker-cap" data-i18n="popCapSeePro">See both plans →</button>
+        <button type="button" class="opto1e18-btn opto1e18-btn--ghost opto1e18-btn--sm" data-action="dismiss-cap" data-i18n="btnMaybeLater">Maybe later</button>
+      </div>
+    </section>
+
+    <!-- Post-success nudge: once ever, after the first 'removed' -->
+    <section id="pop-nudge" class="opto1e18-tip opto1e18-nudge" hidden>
+      <p class="opto1e18-nudge__text"><strong data-i18n="popNudgeStrong">First broker removed.</strong> <span data-i18n="popNudgeText">Pro keeps watch on the other 9 and nudges you when one needs a re-check.</span></p>
+      <div class="opto1e18-tip__foot">
+        <button type="button" class="opto1e18-tip__next opto1e18-linkbtn" data-action="open-upgrade" data-surface="post-success" data-i18n="popNudgeSee">See what Pro adds</button>
+        <button type="button" class="opto1e18-linkbtn" data-action="dismiss-nudge" data-i18n="btnMaybeLater">Maybe later</button>
+      </div>
+    </section>
+
+    <!-- SW unreachable -->
+    <section id="pop-error" class="opto1e18-poperror" role="alert" hidden>
+      <p data-i18n="popErrorText">Couldn't reach the extension background. Your ledger stays safe on this device.</p>
+      <button type="button" class="opto1e18-btn opto1e18-btn--secondary opto1e18-btn--sm" data-action="retry" data-i18n="popRetry">Retry</button>
+    </section>
+  </main>
+
+  <footer class="opto1e18-footer opto1e18-pop-footer">
+    <a href="../options/options.html" data-action="open-options" data-i18n="popFooterSettings">Settings</a>
+    <a href="https://zovo.one/privacy-policy" target="_blank" rel="noreferrer" data-i18n="popFooterPrivacy">Privacy</a>
+    <span class="opto1e18-pop-footer__brand">zovo.one</span>
+  </footer>
+
+  <!-- aria-live announcer for status changes -->
+  <p id="pop-live" class="opto1e18-sr-only" aria-live="polite"></p>
+
+  <script src="popup.js" type="module"></script>
+  <script src="../../zovo150k.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1310 @@
+{
+  "extName": {
+    "message": "Opt-Out Ledger",
+    "description": "Extension name (max 45 chars)."
+  },
+  "extDesc": {
+    "message": "Find where data brokers list you, opt out with guided assist, and track each one to removed. Your info never leaves this device.",
+    "description": "Extension description (max 132 chars)."
+  },
+  "notifTitle": {
+    "message": "Catch relistings early",
+    "description": "Daily re-check notification title."
+  },
+  "notifBody": {
+    "message": "Brokers due for a re-check: $1. Data brokers re-collect information over time, so removal is an ongoing process.",
+    "description": "Daily re-check notification body. $1 = number of brokers due."
+  },
+  "assistBannerLabel": {
+    "message": "Opt-Out Ledger form assist",
+    "description": "Accessible label for the in-page assist banner."
+  },
+  "assistFillOffer": {
+    "message": "Pre-fill this opt-out form from your on-device profile?",
+    "description": "Assist banner offer text."
+  },
+  "assistNeverSubmit": {
+    "message": "The extension never submits. You review and send it yourself.",
+    "description": "Assist banner reassurance line."
+  },
+  "assistFillBtn": {
+    "message": "Fill form",
+    "description": "Assist banner button that fills the form (user-initiated)."
+  },
+  "assistNoProfile": {
+    "message": "Set up your private profile first. It stays on this device.",
+    "description": "Assist banner text when no profile exists."
+  },
+  "assistOpenSettings": {
+    "message": "Open settings",
+    "description": "Assist banner button that opens the options page."
+  },
+  "assistFilledSummary": {
+    "message": "Filled $1 fields.",
+    "description": "Assist banner confirmation after filling. $1 = field count."
+  },
+  "assistCaptchaNote": {
+    "message": "Review and submit it yourself. Watch for a CAPTCHA or a confirmation email.",
+    "description": "Assist banner note after filling: the user submits manually."
+  },
+  "assistNoFields": {
+    "message": "Couldn't find the form fields. The opt-out form is on this page; fill it in manually.",
+    "description": "Assist banner text when no fields matched."
+  },
+  "assistDismissBtn": {
+    "message": "Dismiss",
+    "description": "Assist banner dismiss button."
+  },
+  "hlNoProfile": {
+    "message": "Set up your private profile in Settings first.",
+    "description": "Highlight assist message when no profile exists."
+  },
+  "hlNone": {
+    "message": "No exact name matches visible on this page.",
+    "description": "Highlight assist result when nothing matched."
+  },
+  "hlCount": {
+    "message": "Name matches highlighted: $1.",
+    "description": "Highlight assist result count. $1 = number of matches."
+  },
+  "statusNotChecked": {
+    "message": "Not checked",
+    "description": "Broker status chip label."
+  },
+  "statusCheckedNotFound": {
+    "message": "Not found",
+    "description": "Broker status chip label."
+  },
+  "statusListed": {
+    "message": "Listed",
+    "description": "Broker status chip label."
+  },
+  "statusSubmitted": {
+    "message": "Submitted",
+    "description": "Broker status chip label."
+  },
+  "statusRemoved": {
+    "message": "Removed",
+    "description": "Broker status chip label."
+  },
+  "statusReappeared": {
+    "message": "Re-appeared",
+    "description": "Broker status chip label."
+  },
+  "btnCheck": {
+    "message": "Check",
+    "description": "Primary row action before the first check."
+  },
+  "btnRecheck": {
+    "message": "Re-check",
+    "description": "Primary row action after the first check."
+  },
+  "btnStartOptOut": {
+    "message": "Start opt-out",
+    "description": "Primary row action for a listed broker."
+  },
+  "outFoundMe": {
+    "message": "Found me",
+    "description": "Outcome button: the broker listing was found."
+  },
+  "outNotFound": {
+    "message": "Not found",
+    "description": "Outcome button: no listing found."
+  },
+  "outSubmitted": {
+    "message": "I submitted the opt-out",
+    "description": "Outcome button: the user submitted the opt-out themselves."
+  },
+  "outRemoved": {
+    "message": "It's gone",
+    "description": "Outcome button: the listing is gone."
+  },
+  "outStillListed": {
+    "message": "Still listed",
+    "description": "Outcome button: a re-check found the listing still up."
+  },
+  "outFoundAgain": {
+    "message": "Found me again",
+    "description": "Outcome button: a previously removed listing is back."
+  },
+  "outStillGone": {
+    "message": "Still gone",
+    "description": "Outcome button: a re-check confirms the listing is still gone."
+  },
+  "metaNotChecked": {
+    "message": "Not checked yet",
+    "description": "Row meta line before any check."
+  },
+  "metaAwaiting": {
+    "message": "Checked. Mark what you found below",
+    "description": "Row meta line while a check outcome is pending."
+  },
+  "metaNotFound": {
+    "message": "Not found · last checked $1",
+    "description": "Row meta line. $1 = relative time of last check."
+  },
+  "metaListed": {
+    "message": "Listed · found $1",
+    "description": "Row meta line. $1 = relative time the listing was found."
+  },
+  "metaSubmitted": {
+    "message": "Submitted $1. Brokers take hours to weeks to process",
+    "description": "Row meta line. $1 = relative time of submission."
+  },
+  "metaRemoved": {
+    "message": "Removed $1",
+    "description": "Row meta line. $1 = relative time of removal."
+  },
+  "metaReappeared": {
+    "message": "Re-appeared $1",
+    "description": "Row meta line. $1 = relative time the listing came back."
+  },
+  "metaDue": {
+    "message": "due for a re-check",
+    "description": "Row meta suffix when a scheduled re-check is due."
+  },
+  "relToday": {
+    "message": "today",
+    "description": "Relative time: today."
+  },
+  "relYesterday": {
+    "message": "yesterday",
+    "description": "Relative time: yesterday."
+  },
+  "relDaysAgo": {
+    "message": "$1 days ago",
+    "description": "Relative time. $1 = number of days."
+  },
+  "chipUpdate": {
+    "message": "Update status",
+    "description": "Chip toggle tooltip: opens the outcome panel."
+  },
+  "hlOkPopup": {
+    "message": "Highlighting your name on the page.",
+    "description": "Popup assist bar feedback after a successful highlight."
+  },
+  "hlNoGrant": {
+    "message": "Couldn't run on this page. Open the broker page and click the extension icon there.",
+    "description": "Popup assist bar feedback when the page can't be scripted."
+  },
+  "liveMarked": {
+    "message": "$1 marked: $2",
+    "description": "Aria-live announcement after an outcome mark. $1 = broker name, $2 = new status label."
+  },
+  "liveTracked": {
+    "message": "$1 added to your ledger.",
+    "description": "Aria-live announcement after tracking a broker. $1 = broker name."
+  },
+  "liveUntracked": {
+    "message": "$1 removed from your ledger.",
+    "description": "Aria-live announcement after untracking a broker. $1 = broker name."
+  },
+  "liveCap": {
+    "message": "You're tracking $1 of $2 free brokers.",
+    "description": "Aria-live announcement on the free cap. $1 = tracked, $2 = max."
+  },
+  "liveInvalid": {
+    "message": "That status change isn't available from the current status.",
+    "description": "Aria-live announcement on an invalid transition refusal."
+  },
+  "liveError": {
+    "message": "Something went wrong. Try again.",
+    "description": "Aria-live announcement on a generic failure."
+  },
+  "liveProfile": {
+    "message": "Active profile updated.",
+    "description": "Aria-live announcement after switching the active profile."
+  },
+  "tierPro": {
+    "message": "PRO",
+    "description": "Tier badge text for Pro."
+  },
+  "tierFree": {
+    "message": "FREE",
+    "description": "Tier badge text for free."
+  },
+  "pfSaved": {
+    "message": "Profile saved on this device.",
+    "description": "Profile form status after a successful save."
+  },
+  "pfDeleted": {
+    "message": "Profile deleted.",
+    "description": "Profile form status after a delete."
+  },
+  "pfRequired": {
+    "message": "First and last name are required.",
+    "description": "Profile form status on missing required fields."
+  },
+  "pfFailed": {
+    "message": "Couldn't save. Try again.",
+    "description": "Profile form status on a generic save failure."
+  },
+  "pfCap": {
+    "message": "Free stores 1 profile. Pro adds up to 3.",
+    "description": "Profile form status on the profile cap."
+  },
+  "pfNew": {
+    "message": "New profile. Fill it in, then tick the consent box to save.",
+    "description": "Profile form status when starting a new profile."
+  },
+  "hhConfirmDelete": {
+    "message": "Delete this profile and its ledger? This can't be undone.",
+    "description": "Confirm dialog before deleting a household profile."
+  },
+  "labelMe": {
+    "message": "Me",
+    "description": "Default label for the first profile."
+  },
+  "labelProfile": {
+    "message": "Profile $1",
+    "description": "Default label for an additional profile. $1 = position number."
+  },
+  "licActivated": {
+    "message": "Pro activated. The full ledger is unlocked.",
+    "description": "License status after a successful activation."
+  },
+  "licDeactivated": {
+    "message": "License deactivated on this device.",
+    "description": "License status after deactivation."
+  },
+  "licFailed": {
+    "message": "Couldn't activate. Try again.",
+    "description": "License status on a generic activation failure."
+  },
+  "licInvalidAnn": {
+    "message": "That key doesn't check out.",
+    "description": "License aria-live announcement on an invalid key."
+  },
+  "evLine": {
+    "message": "$1 · $2",
+    "description": "One ledger event line. $1 = status label, $2 = date."
+  },
+  "formFirstName": {
+    "message": "First name",
+    "description": "Profile form label."
+  },
+  "formLastName": {
+    "message": "Last name",
+    "description": "Profile form label."
+  },
+  "formCity": {
+    "message": "City",
+    "description": "Profile form label."
+  },
+  "formState": {
+    "message": "State",
+    "description": "Profile form label."
+  },
+  "formZip": {
+    "message": "ZIP",
+    "description": "Profile form label."
+  },
+  "formPhone": {
+    "message": "Phone",
+    "description": "Profile form label."
+  },
+  "formEmail": {
+    "message": "Email",
+    "description": "Profile form label."
+  },
+  "consentText": {
+    "message": "I consent to this profile being stored so the extension can pre-fill opt-out forms when I ask it to.",
+    "description": "Consent checkbox label on the profile forms."
+  },
+  "consentDisclosure": {
+    "message": "Stored on this device only. Never uploaded.",
+    "description": "Bold disclosure line under the consent checkbox."
+  },
+  "consentHint": {
+    "message": "Tick the consent box to enable saving.",
+    "description": "Hint shown while the consent box is unticked."
+  },
+  "privacyPolicy": {
+    "message": "Privacy policy",
+    "description": "Privacy policy link text."
+  },
+  "btnMaybeLater": {
+    "message": "Maybe later",
+    "description": "Dismissive secondary button (paywall/nudge)."
+  },
+  "btnUnlock": {
+    "message": "See Pro",
+    "description": "Locked-section button that scrolls to the upgrade surface."
+  },
+  "proBadge": {
+    "message": "Pro",
+    "description": "Small Pro badge on locked features and the compare table."
+  },
+  "planFree": {
+    "message": "Free",
+    "description": "Free plan name."
+  },
+  "planLifetime": {
+    "message": "Lifetime",
+    "description": "Lifetime plan name."
+  },
+  "planMonthly": {
+    "message": "Monthly",
+    "description": "Monthly plan name."
+  },
+  "priceFree": {
+    "message": "$$0",
+    "description": "Free plan price ($$ = literal $)."
+  },
+  "priceLifetime": {
+    "message": "$$99",
+    "description": "Lifetime plan price ($$ = literal $)."
+  },
+  "priceMonthly": {
+    "message": "$$4.99",
+    "description": "Monthly plan price ($$ = literal $)."
+  },
+  "interval30": {
+    "message": "30 days",
+    "description": "Re-check interval option."
+  },
+  "interval60": {
+    "message": "60 days",
+    "description": "Re-check interval option."
+  },
+  "interval90": {
+    "message": "90 days",
+    "description": "Re-check interval option."
+  },
+  "interval180": {
+    "message": "180 days",
+    "description": "Re-check interval option."
+  },
+  "ribbonBestValue": {
+    "message": "Best value",
+    "description": "Ribbon on the featured lifetime plan card."
+  },
+  "anchorIncogni": {
+    "message": "Incogni Standard costs $$95.88 every year. Opt-Out Ledger Pro is $$99 once.",
+    "description": "Price-anchor line under the upgrade cards (approved anchor copy; $$ = literal $)."
+  },
+  "mockName": {
+    "message": "Jane A. Doe",
+    "description": "Fictitious sample name in mock listings (never real user data)."
+  },
+  "mockAddress": {
+    "message": "1234 Maple St, Springfield",
+    "description": "Fictitious sample address in mock listings."
+  },
+  "mockPhone": {
+    "message": "(555) 013-4471",
+    "description": "Fictitious sample phone number in mock listings."
+  },
+  "popActiveProfile": {
+    "message": "Active profile",
+    "description": "Label/aria-label for the profile picker in the popup header."
+  },
+  "popHeroLabel": {
+    "message": "major data brokers likely list you. Find yours.",
+    "description": "Hero label under the directory-size number."
+  },
+  "popHeroSub": {
+    "message": "Find where you're listed, opt out with guided assist, and track each broker to removed.",
+    "description": "Hero promise line."
+  },
+  "popCatchPre": {
+    "message": "We caught",
+    "description": "Re-appearance banner text before the count."
+  },
+  "popCatchPost": {
+    "message": "re-appearances",
+    "description": "Re-appearance banner text after the count."
+  },
+  "popCatchSub": {
+    "message": "Data brokers re-collect information over time, so removal is an ongoing process. Re-check the flagged brokers below.",
+    "description": "Re-appearance banner explanation."
+  },
+  "popDuePost": {
+    "message": "brokers due for a re-check",
+    "description": "Due-bar text after the count."
+  },
+  "popMeterOf": {
+    "message": "of",
+    "description": "Free-cap meter text between tracked and max."
+  },
+  "popMeterSuffix": {
+    "message": "free brokers tracked",
+    "description": "Free-cap meter trailing text."
+  },
+  "popMeterPro": {
+    "message": "Pro tracks all 12",
+    "description": "Free-cap meter Pro button."
+  },
+  "popMeterAria": {
+    "message": "Free tracking allowance",
+    "description": "Aria-label for the free-cap meter section."
+  },
+  "popMeterBarAria": {
+    "message": "Free brokers tracked",
+    "description": "Aria-label for the free-cap progress bar."
+  },
+  "popFirstH": {
+    "message": "Find your first listing in 10 seconds",
+    "description": "First-run teaching-state heading."
+  },
+  "popFirstS1a": {
+    "message": "Click",
+    "description": "First-run step 1, before the button name."
+  },
+  "popFirstS1b": {
+    "message": "next to Whitepages below.",
+    "description": "First-run step 1, after the button name."
+  },
+  "popFirstS2": {
+    "message": "Search your name on the broker's own page.",
+    "description": "First-run step 2."
+  },
+  "popFirstS3": {
+    "message": "Come back here and mark what you found.",
+    "description": "First-run step 3."
+  },
+  "popFirstNote": {
+    "message": "No sign-up, nothing to set up. Your info never leaves this device.",
+    "description": "First-run reassurance note."
+  },
+  "popAssistText": {
+    "message": "On a broker page? Light up your name in the results.",
+    "description": "Assist bar prompt on a broker page."
+  },
+  "popAssistBtn": {
+    "message": "Highlight my info",
+    "description": "Assist bar button."
+  },
+  "popDirLabel": {
+    "message": "Broker directory",
+    "description": "Label above the broker list."
+  },
+  "popHonesty": {
+    "message": "Statuses reflect what you report.",
+    "description": "Honesty line under the broker list."
+  },
+  "btnTrack": {
+    "message": "+ Track",
+    "description": "Row action: start tracking a broker."
+  },
+  "btnUntrack": {
+    "message": "Stop tracking",
+    "description": "Row action: stop tracking a broker."
+  },
+  "popOutcomesQ": {
+    "message": "What did you find?",
+    "description": "Question above the outcome buttons."
+  },
+  "popTeaserTitle": {
+    "message": "Track a 4th broker? Get all 12.",
+    "description": "Locked Pro teaser title in the popup."
+  },
+  "popTeaserSub": {
+    "message": "Auto re-checks · household profiles · status dashboard",
+    "description": "Locked Pro teaser subtitle."
+  },
+  "popCapPre": {
+    "message": "That is",
+    "description": "Cap-hit note text before the tracked count."
+  },
+  "popCapOf": {
+    "message": "of",
+    "description": "Cap-hit note text between counts."
+  },
+  "popCapPost": {
+    "message": "free brokers. Pro keeps watch on all 12.",
+    "description": "Cap-hit note trailing text."
+  },
+  "popCapSeePro": {
+    "message": "See both plans →",
+    "description": "Cap-hit note primary button. Opens the options upgrade section with both plan cards."
+  },
+  "popNudgeStrong": {
+    "message": "First broker removed.",
+    "description": "Post-success nudge lead-in (bold)."
+  },
+  "popNudgeText": {
+    "message": "Pro keeps watch on the other 9 and nudges you when one needs a re-check.",
+    "description": "Post-success nudge body."
+  },
+  "popNudgeSee": {
+    "message": "See what Pro adds",
+    "description": "Post-success nudge link."
+  },
+  "popErrorText": {
+    "message": "Couldn't reach the extension background. Your ledger stays safe on this device.",
+    "description": "Popup error surface when the service worker is unreachable."
+  },
+  "popRetry": {
+    "message": "Retry",
+    "description": "Popup error surface retry button."
+  },
+  "popFooterSettings": {
+    "message": "Settings",
+    "description": "Popup footer link to the options page."
+  },
+  "popFooterPrivacy": {
+    "message": "Privacy",
+    "description": "Popup footer privacy-policy link."
+  },
+  "optTitle": {
+    "message": "Protect your info · Opt-Out Ledger settings",
+    "description": "Options page title."
+  },
+  "optTag": {
+    "message": "Data-broker opt-outs, tracked to done. On this device only.",
+    "description": "Options header tagline."
+  },
+  "optThemeLabel": {
+    "message": "Theme",
+    "description": "Theme picker label."
+  },
+  "optThemeSystem": {
+    "message": "System",
+    "description": "Theme option: follow the OS."
+  },
+  "optThemeLight": {
+    "message": "Light",
+    "description": "Theme option."
+  },
+  "optThemeDark": {
+    "message": "Dark",
+    "description": "Theme option."
+  },
+  "optNavAria": {
+    "message": "Settings sections",
+    "description": "Aria-label for the settings nav."
+  },
+  "optNavProfile": {
+    "message": "Profile",
+    "description": "Nav link to the profile section."
+  },
+  "optNavDashboard": {
+    "message": "Dashboard",
+    "description": "Nav link to the dashboard section."
+  },
+  "optNavRechecks": {
+    "message": "Re-checks",
+    "description": "Nav link to the re-check section."
+  },
+  "optNavHousehold": {
+    "message": "Household",
+    "description": "Nav link to the household section."
+  },
+  "optNavUpgrade": {
+    "message": "Upgrade",
+    "description": "Nav link to the upgrade section."
+  },
+  "optNavLicense": {
+    "message": "License",
+    "description": "Nav link to the license section."
+  },
+  "optProfileH": {
+    "message": "Save your profile, fill forms faster",
+    "description": "Profile section heading."
+  },
+  "optProfileSub": {
+    "message": "Used only to pre-fill broker opt-out forms when you click \"Fill form\". Never sent anywhere.",
+    "description": "Profile section subheading."
+  },
+  "optProfileSave": {
+    "message": "Save profile",
+    "description": "Profile form save button."
+  },
+  "optProfileDelete": {
+    "message": "Delete profile",
+    "description": "Profile form delete button."
+  },
+  "optDashH": {
+    "message": "Catch every re-appearance",
+    "description": "Dashboard section heading."
+  },
+  "optDashSub": {
+    "message": "Statuses reflect what you report. The extension never checks brokers by itself.",
+    "description": "Dashboard section subheading."
+  },
+  "optStatCatch": {
+    "message": "re-appearances caught",
+    "description": "Dashboard stat label."
+  },
+  "optStatRemoved": {
+    "message": "brokers removed",
+    "description": "Dashboard stat label."
+  },
+  "optStatTracked": {
+    "message": "brokers tracked",
+    "description": "Dashboard stat label."
+  },
+  "optThBroker": {
+    "message": "Broker",
+    "description": "Dashboard table column header."
+  },
+  "optThStatus": {
+    "message": "Status",
+    "description": "Dashboard table column header."
+  },
+  "optThLast": {
+    "message": "Last checked",
+    "description": "Dashboard table column header."
+  },
+  "optThNext": {
+    "message": "Next re-check",
+    "description": "Dashboard table column header."
+  },
+  "optThHistory": {
+    "message": "History",
+    "description": "Dashboard table column header."
+  },
+  "optDashEmpty": {
+    "message": "Nothing tracked yet. Run your first check from the popup.",
+    "description": "Dashboard empty state."
+  },
+  "optIntervalSr": {
+    "message": "Re-check interval for this broker",
+    "description": "Screen-reader label for a row interval picker."
+  },
+  "optIntervalAria": {
+    "message": "Re-check interval",
+    "description": "Aria-label for a row interval picker."
+  },
+  "optEvents": {
+    "message": "events",
+    "description": "Event-count suffix in the history column and sample rows."
+  },
+  "optDashLockH": {
+    "message": "Keep every broker in one ledger",
+    "description": "Locked dashboard panel title."
+  },
+  "optDashLockText": {
+    "message": "Per-broker status, last-checked dates, next re-checks, and the full event history, with the re-appearance counter up top.",
+    "description": "Locked dashboard panel text."
+  },
+  "optDashLockBtn": {
+    "message": "Get the full dashboard",
+    "description": "Locked dashboard panel button."
+  },
+  "optDashSr": {
+    "message": "The dashboard is a Pro feature. The visible table is a blurred sample preview.",
+    "description": "Screen-reader explanation of the locked dashboard sample."
+  },
+  "optRecheckH": {
+    "message": "Keep every broker on a re-check schedule",
+    "description": "Re-check section heading."
+  },
+  "optRecheckSub": {
+    "message": "Data brokers re-collect information over time, so removal is an ongoing process. Re-checks remind you to look again.",
+    "description": "Re-check section subheading."
+  },
+  "optRecheckAutoH": {
+    "message": "Never miss a re-check",
+    "description": "Auto re-check setting title."
+  },
+  "optRecheckAutoSub": {
+    "message": "A daily check tallies due brokers and nudges you with a notification and a badge count.",
+    "description": "Auto re-check setting description."
+  },
+  "optRecheckIntH": {
+    "message": "Get a nudge when a broker is due",
+    "description": "Default-interval setting title."
+  },
+  "optRecheckIntSub": {
+    "message": "How long until a broker is due again. Per-broker intervals live in the dashboard table.",
+    "description": "Default-interval setting description."
+  },
+  "optRecheckIntAria": {
+    "message": "Default re-check interval",
+    "description": "Aria-label for the default-interval picker."
+  },
+  "optRecheckLockH": {
+    "message": "Get automatic re-checks",
+    "description": "Locked re-check section title."
+  },
+  "optRecheckLockSub": {
+    "message": "Free keeps manual re-checks. The popup always shows how long ago you last checked.",
+    "description": "Locked re-check section text."
+  },
+  "optHouseH": {
+    "message": "Protect the whole household",
+    "description": "Household section heading."
+  },
+  "optHouseSub": {
+    "message": "Each profile gets its own ledger, one for you and up to two more for family. All stored on this device only.",
+    "description": "Household section subheading."
+  },
+  "optActiveBadge": {
+    "message": "Active",
+    "description": "Badge on the active household profile."
+  },
+  "optSetActive": {
+    "message": "Set active",
+    "description": "Household row action: make a profile active."
+  },
+  "optRemoveProfile": {
+    "message": "Delete",
+    "description": "Household row action: delete a profile."
+  },
+  "optFamilyMember": {
+    "message": "Family member",
+    "description": "Placeholder label for locked household slots."
+  },
+  "optHouseAdd": {
+    "message": "Add a profile",
+    "description": "Household add-profile button."
+  },
+  "optHouseHint": {
+    "message": "Up to 3 profiles. Adding one opens the profile form above.",
+    "description": "Household section hint."
+  },
+  "optHouseLockH": {
+    "message": "Get 2 more profiles for family",
+    "description": "Locked household section title."
+  },
+  "optHouseLockSub": {
+    "message": "Pro adds up to 3 profiles, each with its own ledger and re-check schedule.",
+    "description": "Locked household section text."
+  },
+  "optUpH": {
+    "message": "Keep watch on all 12, automatically",
+    "description": "Upgrade section heading."
+  },
+  "optUpSub": {
+    "message": "Pro tracks the whole directory and reminds you to re-check, while your info stays on this device.",
+    "description": "Upgrade section subheading."
+  },
+  "optUpLifetimePer": {
+    "message": "once",
+    "description": "Lifetime price suffix."
+  },
+  "optUpLifetimeNote": {
+    "message": "One payment, no subscription.",
+    "description": "Lifetime card note."
+  },
+  "optUpGetLifetime": {
+    "message": "Get my lifetime license",
+    "description": "Lifetime checkout button."
+  },
+  "optUpMonthlyPer": {
+    "message": "/month",
+    "description": "Monthly price suffix."
+  },
+  "optUpMonthlyNote": {
+    "message": "Cancel anytime.",
+    "description": "Monthly card note."
+  },
+  "optUpGoMonthly": {
+    "message": "Start my monthly plan",
+    "description": "Monthly checkout button."
+  },
+  "cmpF1": {
+    "message": "Guided checks + opt-out assist on all 12 brokers",
+    "description": "Compare-table feature row."
+  },
+  "cmpF2": {
+    "message": "Brokers tracked in your ledger",
+    "description": "Compare-table feature row."
+  },
+  "cmpAny3": {
+    "message": "Any 3",
+    "description": "Compare-table free cell for tracked brokers."
+  },
+  "cmpAll12": {
+    "message": "All 12",
+    "description": "Compare-table Pro cell for tracked brokers."
+  },
+  "cmpF3": {
+    "message": "Re-check reminders",
+    "description": "Compare-table feature row."
+  },
+  "cmpManual": {
+    "message": "Manual",
+    "description": "Compare-table free cell for re-checks."
+  },
+  "cmpAuto": {
+    "message": "Automatic, at the interval you pick",
+    "description": "Compare-table Pro cell for re-checks."
+  },
+  "cmpF4": {
+    "message": "Household profiles",
+    "description": "Compare-table feature row."
+  },
+  "cmpF5": {
+    "message": "Status dashboard + event history",
+    "description": "Compare-table feature row."
+  },
+  "cmpF6": {
+    "message": "Re-appearance alerts",
+    "description": "Compare-table feature row."
+  },
+  "cmpIncluded": {
+    "message": "Included",
+    "description": "Aria-label for a compare-table yes mark."
+  },
+  "cmpNotIncluded": {
+    "message": "Not included",
+    "description": "Aria-label for a compare-table no mark."
+  },
+  "optUpHonest": {
+    "message": "Pro never removes data by itself. It tracks what you report and reminds you to re-check.",
+    "description": "Honesty line under the compare table."
+  },
+  "optUpHint": {
+    "message": "After checkout you'll get a license key by email. Activate it below under License.",
+    "description": "Post-checkout hint under the compare table."
+  },
+  "optUpActiveH": {
+    "message": "You're on Pro",
+    "description": "Upgrade section heading when Pro is active."
+  },
+  "optUpActiveSub": {
+    "message": "All 12 brokers, automatic re-checks, household profiles, and the dashboard are unlocked. Manage your key under License.",
+    "description": "Upgrade section text when Pro is active."
+  },
+  "optLicH": {
+    "message": "License key",
+    "description": "License section heading and input label."
+  },
+  "optLicSub": {
+    "message": "Activating checks your key with Zovo once. Nothing else about your info leaves this device.",
+    "description": "License section subheading."
+  },
+  "optLicActivate": {
+    "message": "Activate",
+    "description": "License activation button."
+  },
+  "optLicError": {
+    "message": "That key doesn't check out. Look for a typo and try again.",
+    "description": "Inline error for an invalid license key."
+  },
+  "optLicHint": {
+    "message": "Your key arrives in the purchase email after checkout.",
+    "description": "License input hint."
+  },
+  "optLicActiveSince": {
+    "message": "Pro active since",
+    "description": "Label before the activation date."
+  },
+  "optLicKeyLabel": {
+    "message": "Key",
+    "description": "Label before the active license key."
+  },
+  "optLicDeactivate": {
+    "message": "Deactivate on this device",
+    "description": "License deactivation button."
+  },
+  "onbTitle": {
+    "message": "Find where brokers list you · Opt-Out Ledger",
+    "description": "Onboarding page title."
+  },
+  "onbSkip": {
+    "message": "Skip intro",
+    "description": "Onboarding skip button."
+  },
+  "onb1Eyebrow": {
+    "message": "Spot who lists you",
+    "description": "Onboarding step 1 eyebrow."
+  },
+  "onb1H1": {
+    "message": "Anyone can find your home address in one search.",
+    "description": "Onboarding step 1 heading."
+  },
+  "onb1Lede": {
+    "message": "Data brokers collect your name, address, phone number, and relatives, then publish them on people-search sites. An ex, a scammer, a stranger with a grudge. Anyone can look you up.",
+    "description": "Onboarding step 1 lead paragraph."
+  },
+  "onb1Pt": {
+    "message": "Every broker has an opt-out, but each form works differently and new sites pop up constantly. Opt-Out Ledger turns that mess into a checklist you can finish.",
+    "description": "Onboarding step 1 second paragraph."
+  },
+  "mockFullNameLabel": {
+    "message": "Full name",
+    "description": "Mock listing field label."
+  },
+  "mockHomeAddressLabel": {
+    "message": "Home address",
+    "description": "Mock listing field label."
+  },
+  "mockAddressLabel": {
+    "message": "Address",
+    "description": "Mock listing field label."
+  },
+  "mockPhoneLabel": {
+    "message": "Phone",
+    "description": "Mock listing field label."
+  },
+  "mockRelativesLabel": {
+    "message": "Relatives",
+    "description": "Mock listing field label."
+  },
+  "mockRelativesValue": {
+    "message": "Family members, also listed",
+    "description": "Mock relatives field value (step 1)."
+  },
+  "mockRelativesFill": {
+    "message": "3 relatives listed",
+    "description": "Mock relatives field demo value (step 2)."
+  },
+  "onb1TagPublic": {
+    "message": "Public right now",
+    "description": "Mock listing exposure tag."
+  },
+  "onb2Eyebrow": {
+    "message": "The directory",
+    "description": "Onboarding step 2 eyebrow."
+  },
+  "onb2H1": {
+    "message": "Twelve sites likely list you. Find every one.",
+    "description": "Onboarding step 2 heading."
+  },
+  "onb2Lede": {
+    "message": "Opt-Out Ledger ships with a directory of the twelve biggest data brokers. Your first guided check takes under ten seconds after install. No account, no signup, nothing leaves your browser.",
+    "description": "Onboarding step 2 lead paragraph."
+  },
+  "onb2DemoBtn": {
+    "message": "Watch a listing appear",
+    "description": "Onboarding step 2 demo button."
+  },
+  "onb2Cap": {
+    "message": "The twelve in your directory",
+    "description": "Caption above the broker tag row."
+  },
+  "onb3Eyebrow": {
+    "message": "Save minutes on every form",
+    "description": "Onboarding step 3 eyebrow."
+  },
+  "onb3H1": {
+    "message": "Save the details opt-out forms keep asking for.",
+    "description": "Onboarding step 3 heading."
+  },
+  "onb3Lede": {
+    "message": "Every broker form wants the same things. Your name, city, state, maybe an email or phone. Enter them once here and the extension pre-fills each form when you click Fill. You review and submit every time.",
+    "description": "Onboarding step 3 lead paragraph."
+  },
+  "onb3Pt": {
+    "message": "Only first and last name are required, because the forms ask for them. Everything else is optional, and you can skip this whole step and set it up later in Settings.",
+    "description": "Onboarding step 3 second paragraph."
+  },
+  "onbSaveBtn": {
+    "message": "Save my profile",
+    "description": "Onboarding profile save button."
+  },
+  "onbSavedOk": {
+    "message": "Saved. Every opt-out form fills from this now.",
+    "description": "Onboarding profile saved confirmation."
+  },
+  "onb4Eyebrow": {
+    "message": "Keep your address yours",
+    "description": "Onboarding step 4 eyebrow."
+  },
+  "onb4H1": {
+    "message": "Your info never leaves this device.",
+    "description": "Onboarding step 4 heading."
+  },
+  "onb4Lede": {
+    "message": "The extension makes zero network calls, the code is MIT-licensed open source, and one developer stands behind it, someone you can reach.",
+    "description": "Onboarding step 4 lead paragraph."
+  },
+  "onb4Stat1": {
+    "message": "sandboxed, no remote code",
+    "description": "Trust stat caption (MV3)."
+  },
+  "onb4Stat2": {
+    "message": "network calls, nothing phones home",
+    "description": "Trust stat caption (zero)."
+  },
+  "onb4Stat3": {
+    "message": "open source on GitHub",
+    "description": "Trust stat caption (MIT)."
+  },
+  "onb4Pt": {
+    "message": "Opt-Out Ledger is where you meet Zovo. The bigger idea is an honest layer for the whole extension world, one tool at a time. No tracking, no data resale, no SEO spam.",
+    "description": "Onboarding step 4 second paragraph."
+  },
+  "onb4LinkWhy": {
+    "message": "Why I build Zovo",
+    "description": "Onboarding step 4 link."
+  },
+  "onb4LinkVision": {
+    "message": "The vision",
+    "description": "Onboarding step 4 link."
+  },
+  "onb4LinkSafe": {
+    "message": "How we keep you safe",
+    "description": "Onboarding step 4 link."
+  },
+  "onb4Trust1H": {
+    "message": "Keep everything on your device",
+    "description": "Trust row 1 heading."
+  },
+  "onb4Trust1P": {
+    "message": "Profiles live in browser storage on this machine. No account, no sync server, no analytics.",
+    "description": "Trust row 1 text."
+  },
+  "onb4Trust2H": {
+    "message": "Watch one person ship",
+    "description": "Trust row 2 heading."
+  },
+  "onb4Trust2P": {
+    "message": "Not a faceless company. One developer builds in public and answers you directly at",
+    "description": "Trust row 2 text before the GitHub link."
+  },
+  "onb4Trust3H": {
+    "message": "Read every line, fix what you find",
+    "description": "Trust row 3 heading."
+  },
+  "onb4Trust3P": {
+    "message": "MIT-licensed and open. Audit the code, fork it, or build on it.",
+    "description": "Trust row 3 text."
+  },
+  "onb5Eyebrow": {
+    "message": "Honest pricing",
+    "description": "Onboarding step 5 eyebrow."
+  },
+  "onb5H1": {
+    "message": "Free tracks three. Find all twelve with Pro.",
+    "description": "Onboarding step 5 heading."
+  },
+  "onb5Lede": {
+    "message": "The free tier is a real tool, not a demo. One payment of ninety-nine dollars covers the whole directory and turns on every Pro feature in this extension.",
+    "description": "Onboarding step 5 lead paragraph."
+  },
+  "onb5FreePer": {
+    "message": "forever",
+    "description": "Free price suffix."
+  },
+  "onb5FreeF1": {
+    "message": "Guided checks and opt-out assist on all 12 brokers",
+    "description": "Free plan feature."
+  },
+  "onb5FreeF2": {
+    "message": "Track any 3 brokers in your ledger",
+    "description": "Free plan feature."
+  },
+  "onb5FreeF3": {
+    "message": "One private profile, on this device only",
+    "description": "Free plan feature."
+  },
+  "onb5FreeF4": {
+    "message": "Manual re-checks from the popup",
+    "description": "Free plan feature."
+  },
+  "onb5ProPer": {
+    "message": "one time",
+    "description": "Lifetime price suffix."
+  },
+  "onb5ProF1": {
+    "message": "All 12 brokers tracked at once",
+    "description": "Lifetime plan feature."
+  },
+  "onb5ProF2": {
+    "message": "Automatic re-check reminders at your interval",
+    "description": "Lifetime plan feature."
+  },
+  "onb5ProF3": {
+    "message": "Household profiles, up to 3",
+    "description": "Lifetime plan feature."
+  },
+  "onb5ProF4": {
+    "message": "Status dashboard with full event history",
+    "description": "Lifetime plan feature."
+  },
+  "onb5ProF5": {
+    "message": "One payment, no subscription",
+    "description": "Lifetime plan feature."
+  },
+  "onb5Cta": {
+    "message": "Compare plans and upgrade",
+    "description": "Offer step call-to-action button."
+  },
+  "onb5Guar": {
+    "message": "Incogni Standard costs $$95.88 every year. Opt-Out Ledger Pro is $$99 once. Prefer monthly? It is $$4.99 on the upgrade page.",
+    "description": "Price-anchor guarantee line (approved anchor copy; $$ = literal $)."
+  },
+  "onb6Eyebrow": {
+    "message": "You're set",
+    "description": "Onboarding step 6 eyebrow."
+  },
+  "onb6H1": {
+    "message": "Find your first listing in one click.",
+    "description": "Onboarding step 6 heading."
+  },
+  "onb6Lede": {
+    "message": "Click the Opt-Out Ledger icon in your toolbar, pick a broker, and run the check. The extension opens the broker's own search page. You look, then mark what you found.",
+    "description": "Onboarding step 6 lead paragraph."
+  },
+  "onb6SignH": {
+    "message": "Get answers from the developer",
+    "description": "Sign-off block heading."
+  },
+  "onb6SignBody": {
+    "message": "I build Zovo on my own, in the open. If something breaks, write to me and I answer. If you go Pro, your ninety-nine dollars funds the next honest tool, and your notes shape what it becomes.",
+    "description": "Sign-off block body."
+  },
+  "onb6LinkGh": {
+    "message": "Reach me on GitHub",
+    "description": "Sign-off link."
+  },
+  "onb6LinkVision": {
+    "message": "Where this is going",
+    "description": "Sign-off link."
+  },
+  "onb6Cheat1": {
+    "message": "Open the directory",
+    "description": "Cheat-sheet row label."
+  },
+  "onb6Kbd1": {
+    "message": "toolbar icon",
+    "description": "Cheat-sheet row hint."
+  },
+  "onb6Cheat2": {
+    "message": "Run your first check",
+    "description": "Cheat-sheet row label."
+  },
+  "onb6Kbd2": {
+    "message": "pick a broker",
+    "description": "Cheat-sheet row hint."
+  },
+  "onb6Cheat3": {
+    "message": "Start an opt-out",
+    "description": "Cheat-sheet row label."
+  },
+  "onb6Kbd3": {
+    "message": "one click",
+    "description": "Cheat-sheet row hint."
+  },
+  "onb6Cheat4": {
+    "message": "Fill the broker form",
+    "description": "Cheat-sheet row label."
+  },
+  "onb6Kbd4": {
+    "message": "Fill on the banner",
+    "description": "Cheat-sheet row hint."
+  },
+  "onb6Pt": {
+    "message": "Checks you run stay in your ledger on this device. Come back any time to mark an outcome or start the next broker.",
+    "description": "Onboarding step 6 closing paragraph."
+  },
+  "onbNavBack": {
+    "message": "Back",
+    "description": "Onboarding back button."
+  },
+  "onbNavNext": {
+    "message": "Keep going",
+    "description": "Onboarding next button."
+  },
+  "onbNavFinish": {
+    "message": "Start your first check",
+    "description": "Onboarding final-step button."
+  },
+  "onbStepCounter": {
+    "message": "$1 of $2",
+    "description": "Onboarding step counter. $1 = current step, $2 = total steps."
+  },
+  "onbProfileSavedBtn": {
+    "message": "Profile saved",
+    "description": "Onboarding save button label after a successful save."
+  },
+  "onbSaveNameRequired": {
+    "message": "First and last name are needed to fill opt-out forms.",
+    "description": "Onboarding save status when required names are missing."
+  },
+  "onbSaveNoAnswer": {
+    "message": "No answer from the background worker. Try again, or save later in Settings.",
+    "description": "Onboarding save status when the service worker does not answer."
+  },
+  "onbSavedExisting": {
+    "message": "A profile is already saved on this device. Settings can edit it.",
+    "description": "Onboarding save confirmation when the free profile slot is already taken."
+  },
+  "onbConsentRequired": {
+    "message": "Tick the consent box first.",
+    "description": "Onboarding save status when consent is missing."
+  },
+  "onbSaveInvalid": {
+    "message": "Check the fields and try again.",
+    "description": "Onboarding save status on a generic validation refusal."
+  },
+  "optUpStackEyebrow": {
+    "message": "What Pro adds",
+    "description": "Options #upgrade: eyebrow label above the Pro value-stack list."
+  },
+  "optUpStack1": {
+    "message": "All 12 brokers tracked at once, the whole ledger instead of three",
+    "description": "Options #upgrade value-stack bullet 1 (breadth)."
+  },
+  "optUpStack2": {
+    "message": "Automatic re-check reminders at the interval you pick",
+    "description": "Options #upgrade value-stack bullet 2 (automation)."
+  },
+  "optUpStack3": {
+    "message": "Up to 3 household profiles, each with its own ledger",
+    "description": "Options #upgrade value-stack bullet 3 (household)."
+  },
+  "optUpStack4": {
+    "message": "Full status dashboard with event history and re-appearance alerts",
+    "description": "Options #upgrade value-stack bullet 4 (dashboard surface)."
+  },
+  "optUpForever": {
+    "message": "One payment unlocks this extension's Pro forever.",
+    "description": "Options #upgrade: one-payment-reframe line under the price cards."
+  },
+  "optUpGuarantee": {
+    "message": "Every plan comes with a 14-day money-back guarantee.",
+    "description": "Options #upgrade: risk-reversal line. Matches the real policy on zovo.one/pricing ('All plans come with a 14-day refund policy')."
+  },
+  "sbAriaLabel": {
+    "message": "Upgrade and links",
+    "description": "Options sidebar: aria-label for the aside landmark."
+  },
+  "sbProEyebrow": {
+    "message": "Pro",
+    "description": "Options sidebar: eyebrow on the Get Pro card."
+  },
+  "sbProH": {
+    "message": "Catch every re-appearance on all 12",
+    "description": "Options sidebar: headline on the Get Pro card."
+  },
+  "sbProB1": {
+    "message": "Every broker tracked at once, not only three",
+    "description": "Options sidebar: Pro benefit bullet 1."
+  },
+  "sbProB2": {
+    "message": "Automatic re-check reminders at your interval",
+    "description": "Options sidebar: Pro benefit bullet 2."
+  },
+  "sbProB3": {
+    "message": "Household profiles and the full status dashboard",
+    "description": "Options sidebar: Pro benefit bullet 3."
+  },
+  "sbProCta": {
+    "message": "Get my lifetime · $$99",
+    "description": "Options sidebar: gold CTA to the canonical checkout URL (utm_content=sidebar). $$ = literal $."
+  },
+  "sbProSub": {
+    "message": "One payment, not a subscription · 14-day refund",
+    "description": "Options sidebar: sub line under the CTA. NO trial claim (this build has none); the refund is the real risk reversal."
+  },
+  "sbMoreEyebrow": {
+    "message": "More tools",
+    "description": "Options sidebar: eyebrow on the neutral zovo.one funnel card."
+  },
+  "sbMoreLink": {
+    "message": "Browse all tools at zovo.one",
+    "description": "Options sidebar: the single neutral funnel link (no sibling extensions named — CWS §B)."
+  },
+  "sbFootHelp": {
+    "message": "Help",
+    "description": "Options sidebar: footer link to zovo.one/support."
+  },
+  "sbFootPrivacy": {
+    "message": "Privacy",
+    "description": "Options sidebar: footer link to the privacy policy."
+  },
+  "optHouseSampleFam": {
+    "message": "Family member",
+    "description": "Options household: placeholder label on the locked sample slots shown to free users."
+  },
+  "cmpFeatureCol": {
+    "message": "Feature",
+    "description": "Options upgrade compare table: screen-reader label for the otherwise empty first column header."
+  }
+}

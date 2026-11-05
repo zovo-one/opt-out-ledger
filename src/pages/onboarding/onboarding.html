@@ -1,0 +1,339 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i18n="onbTitle">Find where brokers list you · Opt-Out Ledger</title>
+<!-- I18N (Phase 3, DONE): every user-facing string below carries a data-i18n
+     (or data-i18n-attr) key into _locales/en/messages.json. onboarding.js runs
+     an inline i18n-bootstrap that resolves them via chrome.i18n.getMessage
+     (Chrome 150 does not resolve __MSG_ placeholders in HTML, so none are used
+     here; literal English stays as the fallback when a key has no message).
+     Literal $ in prices is escaped as $$ inside messages.json.
+     The controller is onboarding.js, EXTERNAL because MV3 extension-page CSP
+     blocks inline scripts. -->
+<style>
+:root{
+  --p:#da7262; --p-dark:#d04d39; --p-50:#fbf0ee; --teal:#47d1c1;
+  /* Luminance-pinned AA derivatives (hue-8 family): white text on the strong
+     pair is 5.2–6.6:1 in BOTH themes; gold-text is AA for small gold labels. */
+  --p-strong:#C23E2B; --p-strong-dark:#A93423;
+  --gold:#F59E0B; --gold-dark:#D97706; --on-gold:#1A1A2E; --gold-text:#8A4B06;
+  --bg:#FBFBFD; --stage:#FFFFFF; --surface:#fbf9f9; --surface-2:#F1F2F4;
+  --tx:#1A1A2E; --tx-2:#5B6472; --tx-3:#6B7280; --bd:#e8e4e3;
+  --ok:#10B981; --shadow:0 1px 3px rgba(16,24,40,.06),0 10px 30px -12px rgba(16,24,40,.18);
+  --shadow-lg:0 30px 60px -20px rgba(64,30,22,.32);
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,monospace;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#141112; --stage:#1B1718; --surface:#221D1E; --surface-2:#2A2425;
+  --tx:#F3ECEA; --tx-2:#B8ABA6; --tx-3:#8A7C77; --bd:#352C2B; --p-50:#331C17;
+  --gold-text:#E9A23B;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 12px 34px -14px rgba(0,0,0,.6); --shadow-lg:0 34px 70px -24px rgba(0,0,0,.7);
+}}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:radial-gradient(1200px 600px at 78% -8%,var(--p-50),transparent 60%),var(--bg);color:var(--tx);font-family:var(--font);line-height:1.55;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100%}
+.wrap{flex:1;display:flex;flex-direction:column;max-width:1000px;margin:0 auto;width:100%;padding:26px 24px 40px}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:11px;margin-bottom:26px}
+.mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(145deg,var(--p),var(--teal));display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;box-shadow:0 4px 12px -2px rgba(218,114,98,.5)}
+.brand{font-weight:700;letter-spacing:-.01em}.brand span{color:var(--tx-3);font-weight:500}
+.rail{margin-left:auto;display:flex;gap:7px;align-items:center}
+.dot{width:26px;height:4px;border-radius:9999px;background:var(--bd);transition:background .3s,width .3s}
+.dot.done{background:var(--p)}.dot.now{background:var(--p);width:40px}
+.skip{margin-left:14px;font-size:12.5px;color:var(--tx-3);background:none;border:none;cursor:pointer;font-family:inherit}
+.skip:hover{color:var(--tx-2)}
+.skip:focus-visible{outline:2px solid var(--p);outline-offset:2px;border-radius:4px}
+
+/* stage */
+.stage{flex:1;display:flex;align-items:center;justify-content:center}
+.step{display:none;width:100%;animation:rise .45s cubic-bezier(.2,.7,.3,1)}
+.step.on{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.grid{display:grid;grid-template-columns:1.02fr .98fr;gap:44px;align-items:center}
+@media(max-width:820px){.grid{grid-template-columns:1fr;gap:26px}.visual{order:-1}}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--p-strong);margin-bottom:14px}
+@media(prefers-color-scheme:dark){.eyebrow{color:var(--p)}}
+h1{font-size:40px;line-height:1.08;letter-spacing:-.025em;font-weight:800;text-wrap:balance;margin-bottom:16px}
+@media(max-width:820px){h1{font-size:31px}}
+.lede{font-size:17px;color:var(--tx-2);max-width:30ch}
+.lede.wide{max-width:44ch}
+.pt{margin-top:16px;color:var(--tx-2);max-width:46ch}
+.kbd{font-family:var(--mono);font-size:12px;background:var(--surface-2);border:1px solid var(--bd);border-bottom-width:2px;border-radius:6px;padding:2px 7px;color:var(--tx)}
+
+/* visual card */
+.visual{background:var(--stage);border:1px solid var(--bd);border-radius:18px;box-shadow:var(--shadow);padding:22px;min-height:300px;display:flex;flex-direction:column;justify-content:center}
+.mockhd{display:flex;gap:6px;margin-bottom:16px}
+.mockhd i{width:10px;height:10px;border-radius:50%;background:var(--surface-2)}
+.field{margin:10px 0}
+.field label{display:block;font-size:11.5px;color:var(--tx-3);margin-bottom:5px;font-weight:500}
+.field .box{height:40px;border:1px solid var(--bd);border-radius:8px;background:var(--surface);display:flex;align-items:center;padding:0 12px;font-family:var(--mono);font-size:13px;color:var(--tx-3);overflow:hidden;white-space:nowrap}
+.field .box.filled{border-color:var(--p);background:var(--p-50);color:var(--tx)}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:9999px}
+.tag.exposed{background:rgba(218,114,98,.14);color:#b34a38}
+.tag.broker{background:rgba(71,209,193,.14);color:#157f73}
+@media(prefers-color-scheme:dark){.tag.exposed{color:#e4978b}.tag.broker{color:#4fd8c9}}
+.cap{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-3);margin-top:16px}
+.btags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+
+/* profile form (step 3) */
+.pform .in{width:100%;height:44px;border:1px solid var(--bd);border-radius:9px;background:var(--surface);padding:0 13px;font-family:inherit;font-size:14px;color:var(--tx);transition:border-color .15s,box-shadow .15s}
+.pform .in:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px var(--p-50)}
+.pform .flabel{display:block;font-size:12px;font-weight:600;color:var(--tx-2);margin:12px 0 5px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.consent{display:flex;gap:10px;align-items:flex-start;margin-top:16px}
+.consent input{flex:none;width:16px;height:16px;margin-top:2px;accent-color:var(--p)}
+.consent label{font-size:12.5px;line-height:1.45;color:var(--tx-2)}
+.disclosure{display:block;font-weight:700;color:var(--tx)}
+.savehint{font-size:12px;color:var(--tx-3);margin-top:9px}
+.pstatus{font-size:13px;color:var(--p-dark);margin-top:9px;min-height:18px}
+.saved{display:none;align-items:center;gap:9px;color:var(--ok);font-weight:600;font-size:14px;margin-top:14px}
+.saved.show{display:flex}
+.chk{width:22px;height:22px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:13px}
+
+/* trust (step 4) */
+.trust{display:flex;flex-direction:column;gap:12px}
+.trow{display:flex;gap:13px;align-items:flex-start}
+.tico{flex:none;width:38px;height:38px;border-radius:10px;background:var(--p-50);color:var(--p);display:grid;place-items:center;font-size:17px}
+.trow h4{font-size:14.5px;font-weight:700;margin-bottom:1px}
+.trow p{font-size:13px;color:var(--tx-2)}
+.trow p a{font-size:13px}
+.stats{display:flex;gap:26px;margin:22px 0 2px}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-size:25px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--tx);line-height:1.1}
+.stats span{font-size:11.5px;color:var(--tx-3);margin-top:2px}
+.morelinks{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:13px}
+
+/* pricing (step 5) */
+.plans{display:grid;grid-template-columns:1fr 1.25fr;gap:16px}
+@media(max-width:820px){.plans{grid-template-columns:1fr}}
+.plan{border:1px solid var(--bd);border-radius:16px;padding:22px;background:var(--stage);position:relative}
+.plan.hero{border:2px solid var(--gold);box-shadow:var(--shadow-lg)}
+.plan .pn{font-size:13px;font-weight:700;color:var(--tx-2);text-transform:uppercase;letter-spacing:.06em}
+.price{font-size:44px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:8px 0 2px}
+.price small{font-size:15px;font-weight:600;color:var(--tx-3)}
+.plan ul{list-style:none;margin:16px 0 0;display:flex;flex-direction:column;gap:9px}
+.plan li{font-size:13.5px;padding-left:24px;position:relative;color:var(--tx-2)}
+.plan li::before{content:"";position:absolute;left:0;top:5px;width:15px;height:15px;border-radius:50%;background:var(--ok);opacity:.16}
+.plan li::after{content:"";position:absolute;left:5px;top:6px;width:4px;height:8px;border:solid var(--ok);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.ribbon{position:absolute;top:-11px;right:18px;background:var(--gold);color:var(--on-gold);font-size:11px;font-weight:800;padding:3px 11px;border-radius:9999px;letter-spacing:.02em}
+.guar{font-size:12.5px;color:var(--tx-3);margin-top:14px;text-align:center}
+
+/* close (step 6) */
+.cheat{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cheat .row{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--bd);border-radius:9px;padding:9px 12px}
+.cheat .row span{font-size:13px;color:var(--tx-2)}
+.sign{margin-top:18px;padding:16px 18px;background:var(--surface);border:1px solid var(--bd);border-radius:13px;font-size:14px;color:var(--tx-2)}
+.sign b{color:var(--tx)}
+
+/* nav */
+.nav{display:flex;align-items:center;gap:12px;margin-top:30px}
+.btn{font-family:inherit;font-size:15px;font-weight:600;border-radius:10px;padding:13px 24px;cursor:pointer;border:1px solid transparent;transition:transform .12s,box-shadow .2s,background .2s}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--p-50),0 0 0 5px var(--p)}
+.btn--primary{background:var(--p-strong);color:#fff}.btn--primary:hover{background:var(--p-strong-dark)}
+.btn--primary:disabled{opacity:.55;cursor:default}.btn--primary:disabled:hover{background:var(--p-strong)}
+.btn--pro{background:linear-gradient(145deg,var(--gold),var(--gold-dark));color:var(--on-gold);box-shadow:0 8px 20px -6px rgba(245,158,11,.55)}
+.btn--pro:hover{filter:brightness(1.04)}
+.btn--ghost{background:transparent;color:var(--tx-2);border-color:var(--bd)}.btn--ghost:hover{color:var(--tx);border-color:var(--tx-3)}
+.spacer{flex:1}
+.stepno{font-size:12.5px;color:var(--tx-3);font-variant-numeric:tabular-nums}
+a{color:var(--p-strong);text-decoration:none;font-weight:600}a:hover{text-decoration:underline}
+@media(prefers-color-scheme:dark){a{color:var(--p)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<div class="wrap">
+  <div class="top">
+    <div class="mark">O</div>
+    <div class="brand"><span data-i18n="extName">Opt-Out Ledger</span> <span>· by <a href="https://zovo.one" target="_blank" rel="noopener">zovo.one</a></span></div>
+    <div class="rail" id="rail" aria-hidden="true"></div>
+    <button class="skip" id="skip" data-i18n="onbSkip">Skip intro</button>
+  </div>
+
+  <div class="stage">
+    <!-- 1 · PROBLEM -->
+    <section class="step on" data-step="0">
+      <div class="grid">
+        <div>
+          <div class="eyebrow" data-i18n="onb1Eyebrow">Spot who lists you</div>
+          <h1 data-i18n="onb1H1">Anyone can find your home address in one search.</h1>
+          <p class="lede wide" data-i18n="onb1Lede">Data brokers collect your name, address, phone number, and relatives, then publish them on people-search sites. An ex, a scammer, a stranger with a grudge. Anyone can look you up.</p>
+          <p class="pt" data-i18n="onb1Pt">Every broker has an opt-out, but each form works differently and new sites pop up constantly. Opt-Out Ledger turns that mess into a checklist you can finish.</p>
+        </div>
+        <div class="visual">
+          <div class="mockhd"><i></i><i></i><i></i></div>
+          <div class="field"><label data-i18n="mockFullNameLabel">Full name</label><div class="box" data-i18n="mockName">Jane A. Doe</div></div>
+          <div class="field"><label data-i18n="mockHomeAddressLabel">Home address</label><div class="box" data-i18n="mockAddress">1234 Maple St, Springfield</div></div>
+          <div class="field"><label data-i18n="mockPhoneLabel">Phone</label><div class="box" data-i18n="mockPhone">(555) 013-4471</div></div>
+          <div class="field"><label data-i18n="mockRelativesLabel">Relatives</label><div class="box" data-i18n="mockRelativesValue">Family members, also listed</div></div>
+          <div class="btags"><span class="tag exposed" data-i18n="onb1TagPublic">Public right now</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · INSTANT WIN -->
+    <section class="step" data-step="1">
+      <div class="grid">
+        <div>
+          <div class="eyebrow" data-i18n="onb2Eyebrow">The directory</div>
+          <h1 data-i18n="onb2H1">Twelve sites likely list you. Find every one.</h1>
+          <p class="lede wide" data-i18n="onb2Lede">Opt-Out Ledger ships with a directory of the twelve biggest data brokers. Your first guided check takes under ten seconds after install. No account, no signup, nothing leaves your browser.</p>
+          <button class="btn btn--ghost" id="demoBtn" data-i18n="onb2DemoBtn" style="margin-top:18px">Watch a listing appear</button>
+        </div>
+        <div class="visual">
+          <div class="mockhd"><i></i><i></i><i></i></div>
+          <div class="field"><label data-i18n="mockFullNameLabel">Full name</label><div class="box" data-fill="Jane A. Doe" data-i18n-attr="data-fill:mockName">&nbsp;</div></div>
+          <div class="field"><label data-i18n="mockAddressLabel">Address</label><div class="box" data-fill="1234 Maple St, Springfield" data-i18n-attr="data-fill:mockAddress">&nbsp;</div></div>
+          <div class="field"><label data-i18n="mockPhoneLabel">Phone</label><div class="box" data-fill="(555) 013-4471" data-i18n-attr="data-fill:mockPhone">&nbsp;</div></div>
+          <div class="field"><label data-i18n="mockRelativesLabel">Relatives</label><div class="box" data-fill="3 relatives listed" data-i18n-attr="data-fill:mockRelativesFill">&nbsp;</div></div>
+          <div class="cap" data-i18n="onb2Cap">The twelve in your directory</div>
+          <div class="btags">
+            <span class="tag broker">Whitepages</span><span class="tag broker">Spokeo</span><span class="tag broker">BeenVerified</span><span class="tag broker">Radaris</span><span class="tag broker">MyLife</span><span class="tag broker">Intelius</span><span class="tag broker">TruthFinder</span><span class="tag broker">USSearch</span><span class="tag broker">PeopleFinder</span><span class="tag broker">ThatsThem</span><span class="tag broker">FastPeopleSearch</span><span class="tag broker">TruePeopleSearch</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · INVESTMENT -->
+    <section class="step" data-step="2">
+      <div class="grid">
+        <div>
+          <div class="eyebrow" data-i18n="onb3Eyebrow">Save minutes on every form</div>
+          <h1 data-i18n="onb3H1">Save the details opt-out forms keep asking for.</h1>
+          <p class="lede wide" data-i18n="onb3Lede">Every broker form wants the same things. Your name, city, state, maybe an email or phone. Enter them once here and the extension pre-fills each form when you click Fill. You review and submit every time.</p>
+          <p class="pt" data-i18n="onb3Pt">Only first and last name are required, because the forms ask for them. Everything else is optional, and you can skip this whole step and set it up later in Settings.</p>
+        </div>
+        <div class="visual">
+          <div class="pform" id="pform">
+            <div class="frow">
+              <div><label class="flabel" for="obFirst" data-i18n="formFirstName">First name</label><input class="in" id="obFirst" type="text" autocomplete="off"></div>
+              <div><label class="flabel" for="obLast" data-i18n="formLastName">Last name</label><input class="in" id="obLast" type="text" autocomplete="off"></div>
+            </div>
+            <div class="frow">
+              <div><label class="flabel" for="obCity" data-i18n="formCity">City</label><input class="in" id="obCity" type="text" autocomplete="off"></div>
+              <div><label class="flabel" for="obState" data-i18n="formState">State</label><input class="in" id="obState" type="text" autocomplete="off"></div>
+            </div>
+            <div class="frow">
+              <div><label class="flabel" for="obZip" data-i18n="formZip">ZIP</label><input class="in" id="obZip" type="text" inputmode="numeric" autocomplete="off"></div>
+              <div><label class="flabel" for="obPhone" data-i18n="formPhone">Phone</label><input class="in" id="obPhone" type="tel" autocomplete="off"></div>
+            </div>
+            <label class="flabel" for="obEmail" data-i18n="formEmail">Email</label>
+            <input class="in" id="obEmail" type="email" autocomplete="off">
+            <div class="consent">
+              <input type="checkbox" id="obConsent">
+              <label for="obConsent"><span data-i18n="consentText">I consent to this profile being stored so the extension can pre-fill opt-out forms when I ask it to.</span>
+                <strong class="disclosure" data-i18n="consentDisclosure">Stored on this device only. Never uploaded.</strong>
+                <a href="https://zovo.one/privacy-policy" target="_blank" rel="noopener" data-i18n="privacyPolicy">Privacy policy</a>
+              </label>
+            </div>
+            <button class="btn btn--primary" id="saveBtn" type="button" disabled data-i18n="onbSaveBtn" style="margin-top:14px;width:100%">Save my profile</button>
+            <div class="savehint" id="saveHint" data-i18n="consentHint">Tick the consent box to enable saving.</div>
+            <div class="pstatus" id="saveStatus" role="status" aria-live="polite"></div>
+            <div class="saved" id="saved"><span class="chk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span><span id="savedText" data-i18n="onbSavedOk">Saved. Every opt-out form fills from this now.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · TRUST -->
+    <section class="step" data-step="3">
+      <div class="grid">
+        <div>
+          <div class="eyebrow" data-i18n="onb4Eyebrow">Keep your address yours</div>
+          <h1 data-i18n="onb4H1">Your info never leaves this device.</h1>
+          <p class="lede wide" data-i18n="onb4Lede">The extension makes zero network calls, the code is MIT-licensed open source, and one developer stands behind it, someone you can reach.</p>
+          <div class="stats">
+            <div><b>MV3</b><span data-i18n="onb4Stat1">sandboxed, no remote code</span></div>
+            <div><b>0</b><span data-i18n="onb4Stat2">network calls, nothing phones home</span></div>
+            <div><b>MIT</b><span data-i18n="onb4Stat3">open source on GitHub</span></div>
+          </div>
+          <p class="pt" data-i18n="onb4Pt">Opt-Out Ledger is where you meet Zovo. The bigger idea is an honest layer for the whole extension world, one tool at a time. No tracking, no data resale, no SEO spam.</p>
+          <div class="morelinks">
+            <a href="https://zovo.one/why?ref=optout-ledger" target="_blank" rel="noopener" data-i18n="onb4LinkWhy">Why I build Zovo</a>
+            <a href="https://zovo.one/vision?ref=optout-ledger" target="_blank" rel="noopener" data-i18n="onb4LinkVision">The vision</a>
+            <a href="https://zovo.one/how-we-keep-you-safe?ref=optout-ledger" target="_blank" rel="noopener" data-i18n="onb4LinkSafe">How we keep you safe</a>
+          </div>
+        </div>
+        <div class="visual">
+          <div class="trust">
+            <div class="trow"><div class="tico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div><div><h4 data-i18n="onb4Trust1H">Keep everything on your device</h4><p data-i18n="onb4Trust1P">Profiles live in browser storage on this machine. No account, no sync server, no analytics.</p></div></div>
+            <div class="trow"><div class="tico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div><div><h4 data-i18n="onb4Trust2H">Watch one person ship</h4><p><span data-i18n="onb4Trust2P">Not a faceless company. One developer builds in public and answers you directly at</span> <a href="https://github.com/theluckystrike" target="_blank" rel="noopener">github.com/theluckystrike</a>.</p></div></div>
+            <div class="trow"><div class="tico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16l-4-3-4 3-4-3-4 3z"/><path d="M9 8h6M9 12h6"/></svg></div><div><h4 data-i18n="onb4Trust3H">Read every line, fix what you find</h4><p data-i18n="onb4Trust3P">MIT-licensed and open. Audit the code, fork it, or build on it.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · OFFER -->
+    <section class="step" data-step="4">
+      <div style="text-align:center;max-width:620px;margin:0 auto 22px">
+        <div class="eyebrow" style="text-align:center" data-i18n="onb5Eyebrow">Honest pricing</div>
+        <h1 style="font-size:34px" data-i18n="onb5H1">Free tracks three. Find all twelve with Pro.</h1>
+        <p class="lede wide" style="margin:0 auto" data-i18n="onb5Lede">The free tier is a real tool, not a demo. One payment of ninety-nine dollars covers the whole directory and turns on every Pro feature in this extension.</p>
+      </div>
+      <div class="plans">
+        <div class="plan">
+          <div class="pn" data-i18n="planFree">Free</div>
+          <div class="price"><span data-i18n="priceFree">$0</span> <small data-i18n="onb5FreePer">forever</small></div>
+          <ul>
+            <li data-i18n="onb5FreeF1">Guided checks and opt-out assist on all 12 brokers</li>
+            <li data-i18n="onb5FreeF2">Track any 3 brokers in your ledger</li>
+            <li data-i18n="onb5FreeF3">One private profile, on this device only</li>
+            <li data-i18n="onb5FreeF4">Manual re-checks from the popup</li>
+          </ul>
+        </div>
+        <div class="plan hero">
+          <div class="ribbon" data-i18n="ribbonBestValue">Best value</div>
+          <div class="pn" style="color:var(--gold-text)" data-i18n="planLifetime">Lifetime</div>
+          <div class="price"><span data-i18n="priceLifetime">$99</span> <small data-i18n="onb5ProPer">one time</small></div>
+          <ul>
+            <li data-i18n="onb5ProF1">All 12 brokers tracked at once</li>
+            <li data-i18n="onb5ProF2">Automatic re-check reminders at your interval</li>
+            <li data-i18n="onb5ProF3">Household profiles, up to 3</li>
+            <li data-i18n="onb5ProF4">Status dashboard with full event history</li>
+            <li data-i18n="onb5ProF5">One payment, no subscription</li>
+          </ul>
+          <a class="btn btn--pro" href="../../options/options.html#upgrade" target="_blank" rel="noopener" data-i18n="onb5Cta" style="display:block;text-align:center;margin-top:18px">Compare plans and upgrade</a>
+          <p class="guar" data-i18n="onb5Guar">Incogni Standard costs $95.88 every year. Opt-Out Ledger Pro is $99 once. Prefer monthly? It is $4.99 on the upgrade page.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · CLOSE -->
+    <section class="step" data-step="5">
+      <div class="grid">
+        <div>
+          <div class="eyebrow" data-i18n="onb6Eyebrow">You're set</div>
+          <h1 data-i18n="onb6H1">Find your first listing in one click.</h1>
+          <p class="lede wide" data-i18n="onb6Lede">Click the Opt-Out Ledger icon in your toolbar, pick a broker, and run the check. The extension opens the broker's own search page. You look, then mark what you found.</p>
+          <div class="sign">
+            <h4 style="font-size:13px;margin-bottom:7px;color:var(--tx)" data-i18n="onb6SignH">Get answers from the developer</h4>
+            <span data-i18n="onb6SignBody">I build Zovo on my own, in the open. If something breaks, write to me and I answer. If you go Pro, your ninety-nine dollars funds the next honest tool, and your notes shape what it becomes.</span>
+            <div class="morelinks" style="margin-top:13px">
+              <a href="https://github.com/theluckystrike" target="_blank" rel="noopener" data-i18n="onb6LinkGh">Reach me on GitHub</a>
+              <a href="https://zovo.one/vision?ref=optout-ledger" target="_blank" rel="noopener" data-i18n="onb6LinkVision">Where this is going</a>
+            </div>
+          </div>
+        </div>
+        <div class="visual">
+          <div class="cheat">
+            <div class="row"><span data-i18n="onb6Cheat1">Open the directory</span><span class="kbd" data-i18n="onb6Kbd1">toolbar icon</span></div>
+            <div class="row"><span data-i18n="onb6Cheat2">Run your first check</span><span class="kbd" data-i18n="onb6Kbd2">pick a broker</span></div>
+            <div class="row"><span data-i18n="onb6Cheat3">Start an opt-out</span><span class="kbd" data-i18n="onb6Kbd3">one click</span></div>
+            <div class="row"><span data-i18n="onb6Cheat4">Fill the broker form</span><span class="kbd" data-i18n="onb6Kbd4">Fill on the banner</span></div>
+          </div>
+          <p class="pt" style="margin-top:16px" data-i18n="onb6Pt">Checks you run stay in your ledger on this device. Come back any time to mark an outcome or start the next broker.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="nav">
+    <button class="btn btn--ghost" id="back" data-i18n="onbNavBack" style="visibility:hidden">Back</button>
+    <span class="stepno" id="stepno">1 of 6</span>
+    <span class="spacer"></span>
+    <button class="btn btn--primary" id="next" data-i18n="onbNavNext">Keep going</button>
+  </div>
+</div>
+
+<script src="onboarding.js" defer></script>
+</body></html>
